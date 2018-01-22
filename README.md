@@ -23,7 +23,7 @@ This folder is used for some Arduino codes and programs.
 -    **H2O2 Concentration Calculator**
 > The calculator for translation of H2O2 mass fraction and temperature to the H2O2 concentration. Originally, we use [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3) to develop, but in future, we will change to [Arduino NANO](https://store.arduino.cc/usa/arduino-nano).
 
-- **Hybrid Rocket Lander Project**
+-	**Hybrid Rocket Lander Project**
 > This project is assigned from NCKU satellite Propulsion LAB. The main goal of program is developing a planet-exploration mission hover system. Using mono-propulsion and hybrid rocket motor for its main thrust hovering and moving on an extraterrestrial surface.  
 
 -    **Noodle Machine**
