@@ -5,17 +5,17 @@
 This folder is used for some Arduino codes and programs. 
 
 -	**Basic programs for test and examples** 
->Some basic Arduino codes and tests for single device for algorithms. Including
-> > 1.	6-DOF sensor
-> > 2.	Button
-> > 3.	Ethernet shield
-> > 4.	Key-pad  
-> > 5.	LCD
-> > 6.	Ramps (for 3D printers)
-> > 7.	SD card modulus
-> > 8. 	Segment displays
-> > 9.	Sonar sensor
-> > 10.	Step motor
+>	Some basic Arduino codes and tests for single device for algorithms. Including  
+> 	1.	6-DOF sensor  
+>	2.	Button   
+>	3.	Ethernet shield  
+>	4.	Key-pad   
+>	5.	LCD  
+>	6.	Ramps (for 3D printers)  
+>	7.	SD card modulus  
+>	8. 	Segment displays  
+>	9.	Sonar sensor  
+>	10.	Step motor  
 
 -	**Computer Alert System**
 > Commercial program for application of computer security and auto-power-control systems. Using [Arduino Uno](https://store.arduino.cc/usa/arduino-uno-rev3) board and Ethernet shield to send the alert message to server. With end-stop sensor to detect the door-opened and buzzer device used as the alarm generator.  
