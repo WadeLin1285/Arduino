@@ -66,7 +66,7 @@ int unlock();
 void setON();
 void setSLEEP();
 void setCODE();
-void Buzzer(int number, int delay_time = 1000);                             // buzzer operation mode
+void Buzzer(int number, int delay_time = 1000);                                // buzzer operation mode
 void Alert(char *school, char *number,char *event);
 char *append_str(char *here, char *s);
 char *append_ul(char *here, unsigned long u);
@@ -284,26 +284,28 @@ int unlock() {
 }
 
 // set the current when computer awake
-void setON() { 
+void setON() {
   // measure high current
   for (int n = 0; n < 100 ; n++) {
+    checkAlert();                                     // still check the trigger
     current = analogRead(currentPin);
     if (current > on_high) on_high = current;
     delay(50);
     // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);   // green light on
-    else digitalWrite(greenPin,LOW);                // green light off
+    if (n % 10 == 1) digitalWrite(greenPin,HIGH);        // green light on
+    else digitalWrite(greenPin,LOW);                    // green light off
   }
   current = analogRead(currentPin);
   on_low = current;
   // measure low current
   for (int n = 0; n < 100 ; n++) {
+    checkAlert();                                     // still check the trigger
     current = analogRead(currentPin);
     if (current < on_low) on_low = current;
     delay(50);
     // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);  // green light on
-    else digitalWrite(greenPin,LOW);               // green light off
+    if (n % 10 == 1) digitalWrite(greenPin,HIGH);        // green light on
+    else digitalWrite(greenPin,LOW);                    // green light off
   }
   setON_status = 1; // status update
   Serial.println(F("Computer awake current status is updated!"));
@@ -335,23 +337,25 @@ void setON() {
 void setSLEEP() {
   // measure high current
   for (int n = 0; n < 100 ; n++) {
+    checkAlert();                                     // still check the trigger
     current = analogRead(currentPin);
     if (current > sleep_high) sleep_high = current;
     delay(50);
     // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);  // green light on
-    else digitalWrite(greenPin,LOW);  // green light off
+    if (n % 10 == 1) digitalWrite(greenPin,HIGH);        // green light on
+    else digitalWrite(greenPin,LOW);                    // green light off
   }
   current = analogRead(currentPin);
   sleep_low = current;
   // measure low current
   for (int n = 0; n < 100 ; n++) {
+    checkAlert();                                     // still check the trigger
     current = analogRead(currentPin);
     if (current < sleep_low) sleep_low = current;
     delay(50);
     // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);  // green light on
-    else digitalWrite(greenPin,LOW);  // green light off
+    if (n % 10 == 1) digitalWrite(greenPin,HIGH);       // green light on
+    else digitalWrite(greenPin,LOW);                   // green light off
   }
   setSLEEP_status = 1; // status update
   Serial.println(F("Computer sleep current status is updated!"));
@@ -387,7 +391,7 @@ void setCODE() {
   // check the code
   Serial.print(F("Insert the old code : "));
   while(1) {
-    if (checkAlert()) break;                         // still check the trigger
+    checkAlert();                                     // still check the trigger
     char key = Codepad.getKey();
     if (key) {
       Buzzer(1,50);
@@ -422,13 +426,13 @@ void setCODE() {
     if (input[n] != code[n]) break;           
     if (n == code_length-1) correct = true;
   }
-  if (!correct) {                              // incorrect code
+  if (!correct) {                                      // incorrect code
     for (; num > 0 ; num--) input[num] = 0;
     Serial.println(F("Incorrect password!"));
     Buzzer(1,5000);                                                              // 密碼輸入錯誤時，會發出1次長嗶聲 (Hint: Buzzer(a,b) a為嗶嗶聲之次數，b為每次聲音之間隔時間(單位為毫秒ms=0.001s))
     return 0;
   }
-  if (correct) {                               // code correct
+  if (correct) {                                       // code correct
       Serial.println(F("Correct password!"));
       Buzzer(3,100);
   }
@@ -437,7 +441,7 @@ void setCODE() {
   Serial.print(F("Insert the new code : "));
   num = 0;
   while(1) {
-    if (checkAlert()) break;                         // still check the trigger
+    if (checkAlert()) break;                            // still check the trigger
     if (num == CODE_MAX) {
       Serial.println(F("Code Setting Finish(MAX Length)"));
       code_length = num;
