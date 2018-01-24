@@ -6,15 +6,17 @@
 #define COLS    4           // Four columns
 
 /***************************** 以下數值可做更改 *********************************/
-#define CODE    123456789   // 系統密碼 (Hint: 可自行改寫，但僅可為數字)
-#define CODE_N  9           // 系統密碼長度 (Hint:若密碼有更動，需檢查密碼長度)
-#define TEST    1           // 測試模式 (Hint:若為0則為正式使用；1為測試使用)
-#define DATA1   "NCKU"      // 網路訊息通知之資料1
-#define DATA2   "001"       // 網路訊息通知之資料2
-#define SHUTDOWN_TIME 60    // 系統判斷關機的持續時間 (Hint:若系統偵測到電腦處於睡眠狀態，且連續持續SUHTDOWN_TIME，就會關閉電腦電源) (Hint:單位-秒)
-#define RESTART_TIME  10    // 系統重新啟動電源的時間 (Hint:若系統關閉電腦電源後，經過RESTART_TIME後，會重新開啟電腦電源) (Hint:單位-秒)
+#define CODE          123456789   // 系統預設密碼 (Hint: 可自行改寫，但僅可為數字)
+#define CODE_MAX      9           // 系統密碼最大長度 (Hint: )
+#define TEST          0           // 測試模式 (Hint:若為0則為正式使用；1為測試使用)
+#define DATA1         "NCKU"      // 網路訊息通知之資料1
+#define DATA2         "001"       // 網路訊息通知之資料2
+#define SHUTDOWN_TIME 60          // 系統判斷關機的持續時間 (Hint:若系統偵測到電腦處於睡眠狀態，且連續持續SUHTDOWN_TIME，就會關閉電腦電源) (Hint:單位-秒)
+#define RESTART_TIME  10          // 系統重新啟動電源的時間 (Hint:若系統關閉電腦電源後，經過RESTART_TIME後，會重新開啟電腦電源) (Hint:單位-秒)
+#define LOCK_DELAY    10          // 系統上鎖延遲時間 (Hint:單位-秒)
+#define ALERT_DELAY   5           // 系統警報延遲時間 (Hint:單位-秒)
 
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xFE };                      // 網路擴張版之 MAC 地址 (Hint:若系統出現無法連上 MAC 或 DHCP 訊息時，可能為網路線未連接好，或沒有網際網路連線)
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xFD };                      // 網路擴張版之 MAC 地址 (Hint:若系統出現無法連上 MAC 或 DHCP 訊息時，可能為網路線未連接好，或沒有網際網路連線)
 IPAddress ip(192,168,2,105);                                              // 網路擴張版之 IP 地址 (Hint:此設定為備用之使用)
 char MakerIFTTT_Key[]   = "bJa2fXsJqd4GvtJBF-2agaj5wjoTpLTUJnB0x7S-Zyq";  // 此3行程式碼須和前端程式互相配合設定
 char MakerIFTTT_Event[] = "Alert";                                        // 此3行程式碼須和前端程式互相配合設定
@@ -51,16 +53,19 @@ bool alert = false;                                                         // a
 unsigned long int count = 0,count2 = 0,t = 0,old_t = 0; // time of system
 int  LOWCURRENT  = 490;
 int  HIGHCURRENT = 525;
-int on_high = 0,on_low = 0;                                                 // the current data measured when computer is on 
-int sleep_high = 0,sleep_low = 0;                                           // the current data measured when computer is sleeping
-int setON_status = 0;                                                       // if the setON function is complete, set the status value to 1
-int setSLEEP_status = 0;                                                    // if the setSLEEP function is complete, set the status value to 1
-char code[CODE_N];         
+int  on_high = 0,on_low = 0;                                                 // the current data measured when computer is on 
+int  sleep_high = 0,sleep_low = 0;                                           // the current data measured when computer is sleeping
+int  setON_status = 0;                                                       // if the setON function is complete, set the status value to 1
+int  setSLEEP_status = 0;                                                    // if the setSLEEP function is complete, set the status value to 1
+char code[CODE_MAX];        
+int  code_length;
+long int  code_value = CODE; // 系統密碼 (預設密碼)
 
 // Define functions
 int unlock();
 void setON();
 void setSLEEP();
+void setCODE();
 void Buzzer(int number, int delay_time = 1000);                             // buzzer operation mode
 void Alert(char *school, char *number,char *event);
 char *append_str(char *here, char *s);
@@ -81,20 +86,24 @@ void setup() {
   digitalWrite(relayPin, HIGH  );         // AC current close (通路)
   digitalWrite(greenPin, LOW   );         // green light off
   digitalWrite(redPin,   HIGH  );        // red light on
-  delay(1000);
+  delay(500);
   
   // setting code
   Serial.println(F("Setting code number..."));
-  long int code_value = CODE;
-  for (int n = CODE_N ; n > 0 ; n--) {
+  for (long int c = code_value ; c > 9 ; c /= 10) code_length ++;
+  code_length ++;
+  for (int n = code_length ; n > 0 ; n--) {
     code[n-1] = code_value % 10 + 48;
     if (n == 1) code_value = 0;
     else code_value /= 10;
   }
+  Serial.print(F("Code length:"));
+  Serial.println(code_length);
+  
   Serial.print(F("Code : "));
-  for (int n = 0 ; n < CODE_N ; n++)  Serial.print(code[n]);
+  for (int n = 0 ; n < code_length ; n++)  Serial.print(code[n]);
   Serial.println();
-  delay(1000);
+  delay(500);
 
   // setting ethernet
   Serial.println(F("Setting ethernet shield and connecting to server..."));
@@ -131,6 +140,8 @@ void loop() {
   char key = Codepad.getKey();
   if (key == 'A') {                                                        // 點擊A按鈕，進入鎖定模式
     Serial.println(F("Alert System operating..."));
+    Buzzer(1,50);
+    delay(LOCK_DELAY*1000);
     alert = true;                                                          // start the alert system                                                         
     Buzzer(1,50);
   }
@@ -148,6 +159,11 @@ void loop() {
     Serial.println(F("Computer sleep current status setting start..."));
     Buzzer(1,50);
     setSLEEP();                                                            // set the current value when computer is sleeping
+  }
+  if (key == '*') {                                                        // 點擊*按鈕，進入設定密碼程序
+    Serial.println(F("Setting the code..."));
+    Buzzer(1,50);
+    setCODE();                                                             // set the new code
   }
 
   // System Status LED Display
@@ -210,28 +226,29 @@ void loop() {
 /*  Function Definition  */
 // unlock the alert system
 int unlock() {
-  char input[CODE_N];
+  char input[CODE_MAX];
   int num = 0;
   bool correct = false;
 
+  if (alert == false) return 0;
+  
   // Read the code 
   while(1) {
-    if (checkAlert()) break;                                                             // still check the trigger
-
+    checkAlert();                                                          // still check the trigger
     char key = Codepad.getKey();
     if (key) {
-      
       Buzzer(1,50);
-      
       Serial.print(F("Key inserted : "));
       Serial.println(key);
       if (key == 'A') {                               // back
         Serial.println(F("Back"));
         Serial.print(F("Inserted Code : "));
-        for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
-        Serial.println();
-        input[num-1] = 0;
-        num --;
+        if (num > 0) {
+          for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
+          Serial.println();
+          input[num-1] = 0;
+          num --;
+        }
       }
       else if (key == 'B') {                          // clear all
         for (; num > 0 ; num--) input[num] = 0;
@@ -243,30 +260,29 @@ int unlock() {
       }
       else {
         input[num] = key;
-        if (num == (CODE_N-1)) {
-          for (int n = 0 ; n < CODE_N ; n++) {
-            if (input[n] != code[n]) break;           
-            if (n == CODE_N-1) correct = true;
-          }
-          if (!correct) {                              // incorrect code
-            for (; num > 0 ; num--) input[num] = 0;
-            Serial.println(F("Incorrect password!"));
-            Buzzer(1,5000);                                                              // 密碼輸入錯誤時，會發出1次長嗶聲 (Hint: Buzzer(a,b) a為嗶嗶聲之次數，b為每次聲音之間隔時間(單位為毫秒ms=0.001s))
-            return 0;
-          }
-          if (correct) {                               // code correct
-              Serial.println(F("Correct password!"));
-              alert = 0;                               // close the alert function
-              Buzzer(0);                               // close the buzzer
-              Buzzer(3,100);
-              break;
-          }
-        }
+        if (num == (code_length-1)) break;
         else num ++;
       }
     }
   }
+  for (int n = 0 ; n < code_length ; n++) {
+    if (input[n] != code[n]) break;           
+    if (n == code_length-1) correct = true;
+  }
+  if (!correct) {                              // incorrect code
+    for (; num > 0 ; num--) input[num] = 0;
+    Serial.println(F("Incorrect password!"));
+    Buzzer(1,5000);                                                              // 密碼輸入錯誤時，會發出1次長嗶聲 (Hint: Buzzer(a,b) a為嗶嗶聲之次數，b為每次聲音之間隔時間(單位為毫秒ms=0.001s))
+    return 0;
+  }
+  if (correct) {                               // code correct
+      Serial.println(F("Correct password!"));
+      alert = 0;                               // close the alert function
+      Buzzer(0);                               // close the buzzer
+      Buzzer(3,100);
+  }
 }
+
 // set the current when computer awake
 void setON() { 
   // measure high current
@@ -314,6 +330,7 @@ void setON() {
     Serial.println(LOWCURRENT);
   }
 }
+
 // set the current when computer sleep
 void setSLEEP() {
   // measure high current
@@ -361,6 +378,117 @@ void setSLEEP() {
     Serial.println(LOWCURRENT);
   }
 }
+
+void setCODE() {
+  int  num = 0;
+  char input[CODE_MAX];
+  bool correct = false;
+  
+  // check the code
+  Serial.print(F("Insert the old code : "));
+  while(1) {
+    if (checkAlert()) break;                         // still check the trigger
+    char key = Codepad.getKey();
+    if (key) {
+      Buzzer(1,50);
+      Serial.println(F("Key inserted : "));
+      Serial.println(key);
+      if (key == 'A') {                               // back
+        Serial.println(F("Back"));
+        Serial.print(F("Inserted Code : "));
+        if (num > 0) {
+          for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
+          Serial.println();
+          input[num-1] = 0;
+          num --;
+        }
+      }
+      else if (key == 'B') {                          // clear all
+        for (; num > 0 ; num--) input[num] = 0;
+        Serial.println(F("Clear all"));
+      }
+      else if (key == 'C') {                          // cancel
+        Serial.println(F("Set Code Cancel"));
+        return 0;
+      }
+      else {
+        input[num] = key;
+        if (num == (code_length-1)) break;
+        num ++;
+      }
+    }
+  }
+  for (int n = 0 ; n < code_length ; n++) {
+    if (input[n] != code[n]) break;           
+    if (n == code_length-1) correct = true;
+  }
+  if (!correct) {                              // incorrect code
+    for (; num > 0 ; num--) input[num] = 0;
+    Serial.println(F("Incorrect password!"));
+    Buzzer(1,5000);                                                              // 密碼輸入錯誤時，會發出1次長嗶聲 (Hint: Buzzer(a,b) a為嗶嗶聲之次數，b為每次聲音之間隔時間(單位為毫秒ms=0.001s))
+    return 0;
+  }
+  if (correct) {                               // code correct
+      Serial.println(F("Correct password!"));
+      Buzzer(3,100);
+  }
+  
+  // Read the inserted code
+  Serial.print(F("Insert the new code : "));
+  num = 0;
+  while(1) {
+    if (checkAlert()) break;                         // still check the trigger
+    if (num == CODE_MAX) {
+      Serial.println(F("Code Setting Finish(MAX Length)"));
+      code_length = num;
+      break;
+    }
+    char key = Codepad.getKey();
+    if (key) {
+      Buzzer(1,50);
+      Serial.print(F("Key inserted : "));
+      Serial.println(key);
+      if (key == 'A') {                               // back
+        Serial.println(F("Back"));
+        Serial.print(F("Inserted Code : "));
+        if (num > 0) {
+          for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
+          Serial.println();
+          input[num-1] = 0;
+          num --;
+        }
+      }
+      else if (key == 'B') {                          // clear all
+        for (; num > 0 ; num--) input[num] = 0;
+        Serial.println(F("Clear all"));
+      }
+      else if (key == 'C') {                          // cancel
+        Serial.println(F("Set Code Cancel"));
+        return 0;
+      }
+      else if (key == '#') {                          // cancel
+        Serial.println(F("Code Setting Finish"));
+        code_length = num;
+        break;
+      }
+      else {
+        input[num] = key;
+        Serial.print(input[num]);
+        num ++;
+      }
+    }
+  }
+  Serial.print(F("New code:"));
+  for (int n = 0 ; n < code_length ; n++) {
+    code[n] = input[n];
+    Serial.print(code[n]);
+  }
+  Serial.println();
+  Serial.print(F("New code length:"));
+  Serial.println(code_length);
+  Buzzer(3,100);
+}
+
 // buzzer mode
 void Buzzer(int number, int delay_time = 1000){
   static int buzzer_state;
@@ -379,7 +507,7 @@ void Buzzer(int number, int delay_time = 1000){
         digitalWrite(buzzerPin, LOW);  //Setting buzzer pin to LOW (buzzer on)
         delay(delay_time);
         digitalWrite(buzzerPin,HIGH);  //Setting buzzer pin to HIGH(buzzer off)
-        delay(delay_time);
+        if (n < (number-1)) delay(delay_time);
     }
 }
 // send alert message
@@ -439,17 +567,38 @@ char *append_ul(char *here, unsigned long u) {
 
     return append_str(here, ultoa(u, buf, 10));
 }
+unsigned long int old_time = 0, new_time = 0, count3 = 0;
 
 int checkAlert(){
+  static bool alertON = false;
+  new_time = millis();
+  
+  // Alert delay caclulate
+  if (alertON) {
+    if (old_time == 0) old_time = new_time;
+    count3 = count3 + (new_time - old_time);
+    old_time = new_time;
+    if (count3 >= (ALERT_DELAY*1000)) {
+      if (TEST) Buzzer(1,500);
+      else Buzzer(-1);
+      alertON = false;
+      count3 = 0;
+      old_time = 0;
+      Alert(DATA1,DATA2,"Door Open");  // trigger ifttt event
+      Serial.println(F("Door Opened!"));
+    }
+  }
+  
   // Door Trigger Sensor and Buzzer Alert
+  if (alert == 0) {
+    Buzzer(0);
+    return 0;
+  }
   if (TEST) {
     if (digitalRead(triggerPin_2) == LOW) {
+      Serial.println(F("Triggered"));
       digitalWrite(redPin,HIGH);    // red light on
-      if (alert) {
-        Buzzer(1,500);
-        Alert(DATA1,DATA2,"Door Open");  // trigger ifttt event
-        Serial.println(F("Door Opened!"));
-      }
+      alertON = true;
       return 1;
     }
     else {
@@ -459,12 +608,9 @@ int checkAlert(){
   }
   else {
     if (digitalRead(triggerPin_2) == HIGH) {
+      Serial.println(F("Triggered"));
       digitalWrite(redPin,HIGH);    // red light on
-      if (alert) {
-        Buzzer (-1);
-        Alert(DATA1,DATA2,"Door Open");  // trigger ifttt event
-        Serial.println(F("Door Opened!"));
-      }
+      alertON = true;
       return 1;
     }
     else {
