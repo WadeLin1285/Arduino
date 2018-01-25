@@ -143,7 +143,8 @@ void loop() {
     Buzzer(1,50);
     delay(LOCK_DELAY*1000);
     alert = true;                                                          // start the alert system                                                         
-    Buzzer(1,50);
+    Buzzer(2,100);
+    Serial.println(F("Alert System operated."));
   }
   if (key == 'B') {                                                        // 點擊B按鈕，進入解鎖模式 (Hint:若在解鎖時，觸發警鈴，將會回到鎖定模式)
     Serial.println(F("Unlocking the alert system..."));               
@@ -394,8 +395,14 @@ void setCODE() {
     checkAlert();                                     // still check the trigger
     char key = Codepad.getKey();
     if (key) {
+      if (key == '*' || key == '#' || key == 'D') {
+        Buzzer(2,50);
+        Serial.print(F("Key inserted error: "));
+        Serial.println(key);
+        continue;
+      }
       Buzzer(1,50);
-      Serial.println(F("Key inserted : "));
+      Serial.print(F("Key inserted : "));
       Serial.println(key);
       if (key == 'A') {                               // back
         Serial.println(F("Back"));
@@ -449,6 +456,12 @@ void setCODE() {
     }
     char key = Codepad.getKey();
     if (key) {
+      if (key == '*' || key == 'D') {
+        Buzzer(2,50);
+        Serial.print(F("Key inserted error: "));
+        Serial.println(key);
+        continue;
+      }
       Buzzer(1,50);
       Serial.print(F("Key inserted : "));
       Serial.println(key);
