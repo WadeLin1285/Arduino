@@ -3,6 +3,9 @@
 #### Update time : 2018/1/27 
 #### Author : Wade Lin
 
+Table of Contents
+[一、上傳程式碼到Arduino](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%80%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%88%B0arduino-)
+
 -----
 ## 一、上傳程式碼到Arduino   
 首先，用USB傳輸線，連結Arduino開發板和電腦。  
