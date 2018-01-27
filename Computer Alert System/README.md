@@ -3,8 +3,37 @@
 #### Update time : 2018/1/27 
 #### Author : Wade Lin
 
-Table of Contents
+### Table of Contents  
 [一、上傳程式碼到Arduino](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%80%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%88%B0arduino-)
+[1.上傳程式碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC)
+[2.開啟監視視窗](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E9%96%8B%E5%95%9F%E7%9B%A3%E8%A6%96%E8%A6%96%E7%AA%97)
+[3.顯示程式碼行數](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E9%A1%AF%E7%A4%BA%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A1%8C%E6%95%B8)
+[二、可更改之項目](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%BA%8C%E5%8F%AF%E6%9B%B4%E6%94%B9%E4%B9%8B%E9%A0%85%E7%9B%AE)
+[1.預設密碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%A0%90%E8%A8%AD%E5%AF%86%E7%A2%BC)
+[2.密碼最大長度](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%AF%86%E7%A2%BC%E6%9C%80%E5%A4%A7%E9%95%B7%E5%BA%A6-)
+[3.正式/測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E6%AD%A3%E5%BC%8F%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F-)
+[4.警訊傳輸值  ](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%AD%A6%E8%A8%8A%E5%82%B3%E8%BC%B8%E5%80%BC-)
+[5.判斷開關機之持續時間](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E5%88%A4%E6%96%B7%E9%96%8B%E9%97%9C%E6%A9%9F%E4%B9%8B%E6%8C%81%E7%BA%8C%E6%99%82%E9%96%93)
+[6.上鎖/警報延遲](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#6%E4%B8%8A%E9%8E%96%E8%AD%A6%E5%A0%B1%E5%BB%B6%E9%81%B2)
+[7.MAC地址](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#7mac%E5%9C%B0%E5%9D%80)
+[三、功能按鍵](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%8D%B5)
+[1.上鎖](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E9%8E%96)
+[2.解鎖](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E8%A7%A3%E9%8E%96)
+[3.設定電腦運作電流/設定電腦睡眠電流](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E8%A8%AD%E5%AE%9A%E9%9B%BB%E8%85%A6%E9%81%8B%E4%BD%9C%E9%9B%BB%E6%B5%81%E8%A8%AD%E5%AE%9A%E9%9B%BB%E8%85%A6%E7%9D%A1%E7%9C%A0%E9%9B%BB%E6%B5%81)
+[4.設定新密碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%A8%AD%E5%AE%9A%E6%96%B0%E5%AF%86%E7%A2%BC)
+[四、實際測試](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%9B%9B%E5%AF%A6%E9%9A%9B%E6%B8%AC%E8%A9%A6)
+[1.開機(Setup)](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%96%8B%E6%A9%9Fsetup)
+[2.斷電功能](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E6%96%B7%E9%9B%BB%E5%8A%9F%E8%83%BD)
+[3.警鈴功能](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E8%AD%A6%E9%88%B4%E5%8A%9F%E8%83%BD)
+[4.測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F)
+[5.正式模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E6%AD%A3%E5%BC%8F%E6%A8%A1%E5%BC%8F)
+[五、疑難排解](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%BA%94%E7%96%91%E9%9B%A3%E6%8E%92%E8%A7%A3)
+[1.連不上Ethernet擴展板](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%80%A3%E4%B8%8D%E4%B8%8Aethernet%E6%93%B4%E5%B1%95%E6%9D%BF)
+[]()
+[3.如何安裝電腦電源到系統](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%9D%E9%9B%BB%E8%85%A6%E9%9B%BB%E6%BA%90%E5%88%B0%E7%B3%BB%E7%B5%B1)
+[六、還須更改及測試之部分](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%85%AD%E9%82%84%E9%A0%88%E6%9B%B4%E6%94%B9%E5%8F%8A%E6%B8%AC%E8%A9%A6%E4%B9%8B%E9%83%A8%E5%88%86)
+[1.網路訊息傳輸](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E7%B6%B2%E8%B7%AF%E8%A8%8A%E6%81%AF%E5%82%B3%E8%BC%B8-)
+[2.其他細節](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%85%B6%E4%BB%96%E7%B4%B0%E7%AF%80-)
 
 -----
 ## 一、上傳程式碼到Arduino   
@@ -107,7 +136,7 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-7.png" width="600" >
 
-	【注意】在定義之變數(例如：`CODE_N`)和後面的數值(例如：`9`)中間不能有任何符號，只能有空白鍵。
+	【注意】在定義之變數(例如：CODE_N)和後面的數值(例如：9)中間不能有任何符號，只能有空白鍵。
 
 ## 三、	功能按鍵
 | | 按鍵`A`|按鍵`B`|按鍵`C`|按鍵`D`|按鍵`#`|按鍵`*`|
@@ -121,7 +150,7 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 
 ### 2.	解鎖
 最右側英文字母`B`鍵為「系統解鎖」之功能。  
-在按下解鎖鍵後，系統會進到解鎖程序中(此時防盜功能依然運作中)，這時原本的功能鍵之功能會變成「解鎖程序」之功能(可參見上表)。功能鍵之詳細功能說明：  
+在按下解鎖鍵後，系統會進到解鎖程序中(此時防盜功能依然運作中)，這時原本的功能鍵之功能會變成「解鎖程序」之功能(可參見[上表](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%8D%B5))。功能鍵之詳細功能說明：  
 * `A`按鍵為「返回」-會消除最後輸入的數字
 * `B`按鍵為「清除」-會消除全部輸入的數字
 * `C`按鍵為「取消」-取消程序，並跳回原本的狀態 
@@ -133,39 +162,39 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/4-1.png" width="600" >
 
 #### 【按鍵B】  
-按下按鍵`B`後，會消除全部的數字，例如下圖：按下`B`後，再重新打一次密碼，跳出密碼正確的訊息。  
+按下按鍵`B`後，會消除全部的數字，例如下圖：  
+按下`B`後，再重新打一次密碼，跳出密碼正確的訊息。  
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/4-2.png" width="600" >
 
 #### 【按鍵C】  
-按下按鍵`C`後，會取消解鎖模式，如下圖。
+按下按鍵`C`後，會取消解鎖模式，如下圖：
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/4-3.png" width="600" >
 
 ### 3.	設定電腦運作電流/設定電腦睡眠電流
 最右側英文字母`C`和`D`鍵為「設定電腦運作/睡眠電流」之功能。在按下設定鍵後，系統會進到設定程序中(此時防盜系統依然運作中)，系統會自動紀錄當下的電流，並更新數據。  
 
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/4-4.png" width="600" >
-
 	【注意】當系統重新啟動(Reset)後，電流參數會回復到預設值。
 	
 ### 4.	設定新密碼
 最底下符號`*`鍵為「系統解鎖」之功能。在按下設定密碼鍵後，系統會進到密碼設定程序中(此時防盜功能依然運作中)，首先要輸入舊的密碼，輸入正確後，系統會發出嗶嗶聲代表輸入正確(若輸入錯誤會發出5秒長畢聲)，然後再輸入新的密碼。  
-新密碼的長度可自由設定，但不能超過最大密碼長度(請參見「可更改之項目-密碼最大長度」)，密碼輸入完成後，按下完成鍵，系統會發出嗶嗶聲，就代表設定完成。  
+新密碼的長度可自由設定，但不能超過最大密碼長度(請參見[密碼最大長度](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%AF%86%E7%A2%BC%E6%9C%80%E5%A4%A7%E9%95%B7%E5%BA%A6-))，密碼輸入完成後，按下完成鍵，系統會發出嗶嗶聲，就代表設定完成。  
 
 	【注意】當密碼設定達到最大密碼長度時，系統會強制並自動完成密碼設定，並發出嗶嗶聲。  
 	
-這時原本的功能鍵之功能會變成「設定密碼程序」之功能(可參見上表)。功能鍵之詳細功能說明為：  
-* `A`按鍵為「返回」-會消除最後輸入的數字        (與解鎖時相同)
-* `B`按鍵為「清除」-會消除全部輸入的數字			  (與解鎖時相同)
-* `C`按鍵為「取消」-取消程序，並跳回原本的狀態  (與解鎖時相同)
-* `#`按鍵為「完成輸入」-新密碼輸入完成後，按下完成鍵以完成新密碼設定
-
+這時原本的功能鍵之功能會變成「設定密碼程序」之功能(可參見[上表](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%8D%B5))。  
+功能鍵之詳細功能說明為：   
+* `A`按鍵為「返回」-會消除最後輸入的數字(與解鎖時相同)
+* `B`按鍵為「清除」-會消除全部輸入的數字(與解鎖時相同)
+* `C`按鍵為「取消」-取消程序，並跳回原本的狀態(與解鎖時相同)
+* `#`按鍵為「完成輸入」-新密碼輸入完成後，按下完成鍵以完成新密碼設定。
+##### 
 	【注意】若正確按下功能鍵或數字鍵時，系統會發出一聲短的提示聲(短嗶嗶聲)；而當按下不正確(沒有功能之按鍵)之按鍵時，系統會發出兩聲較長的提示聲(嗶嗶聲)。
 
 ## 四、	實際測試
 ### 1.	開機(Setup)
-開機時若有連接Arduino到電腦，並打開[序列埠輸出監控視窗](https://www.google.com)，接著就會看到左邊的監控視窗，裡面會顯示程式中所寫的訊息。第3行會顯示設定之密碼，然後進入設定網路擴充版程序。然而，如果沒有連接網路線或者網路線式無法連上網際網路時，會持續卡在這裡大約45秒至70秒，等設定時間超過後，系統會自動判斷無法連接網路，並繼續之後的程序(如下圖)：
+開機時若有連接Arduino到電腦，並[打開監視視窗](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E9%96%8B%E5%95%9F%E7%9B%A3%E8%A6%96%E8%A6%96%E7%AA%97)，接著就會看到左邊的監控視窗，裡面會顯示程式中所寫的訊息。第3行會顯示設定之密碼，然後進入設定網路擴充版程序。然而，如果沒有連接網路線或者網路線式無法連上網際網路時，會持續卡在這裡大約45秒至70秒，等設定時間超過後，系統會自動判斷無法連接網路，並繼續之後的程序(如下圖)：
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/5-1.png" width="600" >
 
@@ -242,36 +271,38 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 ## 五、	疑難排解
 ### 1.	連不上Ethernet擴展板
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-1.png" width="200" > 
+
 連不上網路擴張板(MAC地址無法使用)的原因可能為   
-1.	 未接上網路線  
-2.	 未能連上網際網路  
-3.	 網際網路為固定IP  
-4.	 MAC地址錯誤(請參考先前之MAC說明)  
+1. 未接上網路線  
+2. 未能連上網際網路   
+3. 網際網路為固定IP  
+4. MAC地址錯誤(請參考先前之MAC說明)  
+
 ### 2.	伺服器IP位置  
-若是要用連結網頁的方式進行訊息傳輸，則需要知道對方(網址)的IP地址，為了方便及系統穩定需求，網址的IP位置適合是「固定IP」，以免之後IP地址更變造成訊息傳輸錯誤。若只知道網址，則此網址的IP位置可由此方法得到：  
+若是要用連結網頁的方式進行訊息傳輸，則需要知道對方(網址)的IP地址，為了方便及系統穩定需求，網址的IP位置適合是「固定IP」，以免之後IP地址更變造成訊息傳輸錯誤。若只知道網址，則此網址的IP位置可由此方法得到：  
+
 首先，在左下角找到「搜尋Windows」，輸入`cmd`並找到「命令提示字元」程式，點擊開啟。
 
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-2.png" width="200" >
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-3.png" width="200" >
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-2.png" width="600" >
 
 開啟後，會看到一個黑底的視窗(如下圖)，在視窗中打上`ping`加上想要知道IP的網址名稱，這裡我用`google.com`作為範例：
 
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-4.png" width="200" >
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-3.png" width="600" >
 
-輸入後按下Enter鍵，電腦就會傳送封包給server，此時就會顯示此網站的IP地址（右圖紅框處）；此處可以看到google.com的IP位置為「172.217.160.78」。
+輸入後按下Enter鍵，電腦就會傳送封包給server，此時就會顯示此網站的IP地址；此處可以看到`google.com`的IP位置為`172.217.160.78`。
 
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-5.png" width="200" >
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-4.png" width="600" >
 
-	【注意】如果沒有出現(右圖黃框處)成功接收傳送封包的訊息也沒有關係，只要有顯示出網址的IP位置(右圖紅框處)就可以。
+	【注意】如果沒有出現成功接收傳送封包的訊息也沒有關係，只要有顯示出網址的IP位置就可以。
 	
 ### 3.	如何安裝電腦電源到系統
 由於此系統包含了偵測並控制電腦主機之電流狀況，所以安裝時必須將電腦主機之電源供應線連接到系統之「繼電器」和「電流感測器」上，相關的電路接法如下圖：
 
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-6.png" width="200" >
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-5.png" width="600" >
 
 ## 六、	還須更改及測試之部分
 ### 1.	網路訊息傳輸  
-第17到19行的程式碼，原本是由於要使用Maker.ifttt.com進行的訊息傳輸之用，若要用其他方式進行訊息傳輸，必須更改此3行和其相關的方程式。  
+第17到19行的程式碼，原本是由於要使用`Maker.ifttt.com`進行的訊息傳輸之用，若要用其他方式進行訊息傳輸，必須更改此3行和其相關的方程式。  
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/3-1.png" width="600" >
 
