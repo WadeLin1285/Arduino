@@ -20,7 +20,7 @@
 3. [正式/測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E6%AD%A3%E5%BC%8F%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F-) 
 4. [警訊傳輸值  ](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%AD%A6%E8%A8%8A%E5%82%B3%E8%BC%B8%E5%80%BC-)  
 5. [判斷開關機之持續時間](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E5%88%A4%E6%96%B7%E9%96%8B%E9%97%9C%E6%A9%9F%E4%B9%8B%E6%8C%81%E7%BA%8C%E6%99%82%E9%96%93)   
-6. [鎖/警報延遲](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#6%E4%B8%8A%E9%8E%96%E8%AD%A6%E5%A0%B1%E5%BB%B6%E9%81%B2)  
+6. [上鎖/警報延遲](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#6%E4%B8%8A%E9%8E%96%E8%AD%A6%E5%A0%B1%E5%BB%B6%E9%81%B2)  
 7. [MAC地址](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#7mac%E5%9C%B0%E5%9D%80)  
 
 [三、功能按鍵](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%8D%B5)  
