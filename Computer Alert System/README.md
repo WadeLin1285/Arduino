@@ -1,10 +1,15 @@
 # 電腦輔助及防盜系統 - 程式內容及使用說明書  
 ### Computer Assistance and Anti-Theft System User Manual
-#### Update time : 2018/1/27 
-#### Author : Wade Lin
+<p align="right">
+	Update time : 2018/1/27
+</p>
+<p align="right">	
+	Author : Wade Lin
+</p>
 
+-----
 ### Table of Contents  
-[一、上傳程式碼到Arduino](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%80%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%88%B0arduino-)  
+[一、上傳程式碼到Arduino](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%80%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%88%B0arduino-)  
 1. [上傳程式碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC) 
 2. [開啟監視視窗](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E9%96%8B%E5%95%9F%E7%9B%A3%E8%A6%96%E8%A6%96%E7%AA%97) 
 3. [顯示程式碼行數](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E9%A1%AF%E7%A4%BA%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A1%8C%E6%95%B8)   
@@ -39,6 +44,7 @@
 [六、還須更改及測試之部分](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%85%AD%E9%82%84%E9%A0%88%E6%9B%B4%E6%94%B9%E5%8F%8A%E6%B8%AC%E8%A9%A6%E4%B9%8B%E9%83%A8%E5%88%86)   
 1. [網路訊息傳輸](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E7%B6%B2%E8%B7%AF%E8%A8%8A%E6%81%AF%E5%82%B3%E8%BC%B8-)  
 2. [其他細節](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%85%B6%E4%BB%96%E7%B4%B0%E7%AF%80-)  
+
 
 -----
 ## 一、上傳程式碼到Arduino   
