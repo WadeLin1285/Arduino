@@ -25,8 +25,8 @@ byte server[] = { 34 , 201 , 225 , 3};               // 網路伺服器IP位置 
 
 const int redPin       = 0;  // Define red LED pin number 
 const int greenPin     = 1;  // Define green LED pin number 
-const int triggerPin_1 = 14; // Define door trigger pin number (light)
-const int triggerPin_2 = 15; // Define door trigger pin number (endstop)
+const int triggerPin_1 = 14; // Define door trigger pin number
+const int triggerPin_2 = 15; // Define door trigger pin number
 const int buzzerPin    = 16; // Define buzzer pin number (A2)
 const int currentPin   = 17; // Define current sensor pin number (A3)
 const int relayPin     = 18; // Define relay control pin number (A4)
@@ -612,8 +612,14 @@ int checkAlert(){
     return 0;
   }
   if (TEST) {
-    if (digitalRead(triggerPin_2) == LOW) {
-      Serial.println(F("Triggered"));
+    if (digitalRead(triggerPin_1) == LOW) {
+      Serial.println(F("Trigger 1 Triggered"));
+      digitalWrite(redPin,HIGH);    // red light on
+      alertON = true;
+      return 1;
+    }
+    else if (digitalRead(triggerPin_2) == LOW) {
+      Serial.println(F("Trigger 2 Triggered"));
       digitalWrite(redPin,HIGH);    // red light on
       alertON = true;
       return 1;
@@ -624,8 +630,14 @@ int checkAlert(){
     }
   }
   else {
-    if (digitalRead(triggerPin_2) == HIGH) {
-      Serial.println(F("Triggered"));
+    if (digitalRead(triggerPin_1) == HIGH) {
+      Serial.println(F("Trigger 1 Triggered"));
+      digitalWrite(redPin,HIGH);    // red light on
+      alertON = true;
+      return 1;
+    }
+    else if (digitalRead(triggerPin_2) == HIGH) {
+      Serial.println(F("Trigger 2 Triggered"));
       digitalWrite(redPin,HIGH);    // red light on
       alertON = true;
       return 1;
