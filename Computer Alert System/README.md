@@ -4,36 +4,36 @@
 #### Author : Wade Lin
 
 ### Table of Contents  
-[一、上傳程式碼到Arduino](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%80%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%88%B0arduino-)
-[1.上傳程式碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC)
-[2.開啟監視視窗](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E9%96%8B%E5%95%9F%E7%9B%A3%E8%A6%96%E8%A6%96%E7%AA%97)
-[3.顯示程式碼行數](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E9%A1%AF%E7%A4%BA%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A1%8C%E6%95%B8)
-[二、可更改之項目](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%BA%8C%E5%8F%AF%E6%9B%B4%E6%94%B9%E4%B9%8B%E9%A0%85%E7%9B%AE)
-[1.預設密碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%A0%90%E8%A8%AD%E5%AF%86%E7%A2%BC)
-[2.密碼最大長度](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%AF%86%E7%A2%BC%E6%9C%80%E5%A4%A7%E9%95%B7%E5%BA%A6-)
-[3.正式/測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E6%AD%A3%E5%BC%8F%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F-)
-[4.警訊傳輸值  ](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%AD%A6%E8%A8%8A%E5%82%B3%E8%BC%B8%E5%80%BC-)
-[5.判斷開關機之持續時間](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E5%88%A4%E6%96%B7%E9%96%8B%E9%97%9C%E6%A9%9F%E4%B9%8B%E6%8C%81%E7%BA%8C%E6%99%82%E9%96%93)
-[6.上鎖/警報延遲](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#6%E4%B8%8A%E9%8E%96%E8%AD%A6%E5%A0%B1%E5%BB%B6%E9%81%B2)
-[7.MAC地址](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#7mac%E5%9C%B0%E5%9D%80)
-[三、功能按鍵](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%8D%B5)
-[1.上鎖](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E9%8E%96)
-[2.解鎖](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E8%A7%A3%E9%8E%96)
-[3.設定電腦運作電流/設定電腦睡眠電流](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E8%A8%AD%E5%AE%9A%E9%9B%BB%E8%85%A6%E9%81%8B%E4%BD%9C%E9%9B%BB%E6%B5%81%E8%A8%AD%E5%AE%9A%E9%9B%BB%E8%85%A6%E7%9D%A1%E7%9C%A0%E9%9B%BB%E6%B5%81)
-[4.設定新密碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%A8%AD%E5%AE%9A%E6%96%B0%E5%AF%86%E7%A2%BC)
-[四、實際測試](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%9B%9B%E5%AF%A6%E9%9A%9B%E6%B8%AC%E8%A9%A6)
-[1.開機(Setup)](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%96%8B%E6%A9%9Fsetup)
-[2.斷電功能](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E6%96%B7%E9%9B%BB%E5%8A%9F%E8%83%BD)
-[3.警鈴功能](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E8%AD%A6%E9%88%B4%E5%8A%9F%E8%83%BD)
-[4.測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F)
-[5.正式模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E6%AD%A3%E5%BC%8F%E6%A8%A1%E5%BC%8F)
-[五、疑難排解](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%BA%94%E7%96%91%E9%9B%A3%E6%8E%92%E8%A7%A3)
-[1.連不上Ethernet擴展板](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%80%A3%E4%B8%8D%E4%B8%8Aethernet%E6%93%B4%E5%B1%95%E6%9D%BF)
-[]()
-[3.如何安裝電腦電源到系統](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%9D%E9%9B%BB%E8%85%A6%E9%9B%BB%E6%BA%90%E5%88%B0%E7%B3%BB%E7%B5%B1)
-[六、還須更改及測試之部分](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%85%AD%E9%82%84%E9%A0%88%E6%9B%B4%E6%94%B9%E5%8F%8A%E6%B8%AC%E8%A9%A6%E4%B9%8B%E9%83%A8%E5%88%86)
-[1.網路訊息傳輸](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E7%B6%B2%E8%B7%AF%E8%A8%8A%E6%81%AF%E5%82%B3%E8%BC%B8-)
-[2.其他細節](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%85%B6%E4%BB%96%E7%B4%B0%E7%AF%80-)
+[一、上傳程式碼到Arduino](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%80%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC%E5%88%B0arduino-)  
+[1.上傳程式碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E5%82%B3%E7%A8%8B%E5%BC%8F%E7%A2%BC)  
+[2.開啟監視視窗](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E9%96%8B%E5%95%9F%E7%9B%A3%E8%A6%96%E8%A6%96%E7%AA%97)  
+[3.顯示程式碼行數](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E9%A1%AF%E7%A4%BA%E7%A8%8B%E5%BC%8F%E7%A2%BC%E8%A1%8C%E6%95%B8)  
+[二、可更改之項目](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%BA%8C%E5%8F%AF%E6%9B%B4%E6%94%B9%E4%B9%8B%E9%A0%85%E7%9B%AE)  
+[1.預設密碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%A0%90%E8%A8%AD%E5%AF%86%E7%A2%BC)  
+[2.密碼最大長度](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%AF%86%E7%A2%BC%E6%9C%80%E5%A4%A7%E9%95%B7%E5%BA%A6-)  
+[3.正式/測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E6%AD%A3%E5%BC%8F%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F-)  
+[4.警訊傳輸值  ](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%AD%A6%E8%A8%8A%E5%82%B3%E8%BC%B8%E5%80%BC-)  
+[5.判斷開關機之持續時間](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E5%88%A4%E6%96%B7%E9%96%8B%E9%97%9C%E6%A9%9F%E4%B9%8B%E6%8C%81%E7%BA%8C%E6%99%82%E9%96%93)  
+[6.上鎖/警報延遲](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#6%E4%B8%8A%E9%8E%96%E8%AD%A6%E5%A0%B1%E5%BB%B6%E9%81%B2)  
+[7.MAC地址](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#7mac%E5%9C%B0%E5%9D%80)  
+[三、功能按鍵](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%B8%89%E5%8A%9F%E8%83%BD%E6%8C%89%E9%8D%B5)  
+[1.上鎖](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E4%B8%8A%E9%8E%96)  
+[2.解鎖](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E8%A7%A3%E9%8E%96)  
+[3.設定電腦運作電流/設定電腦睡眠電流](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E8%A8%AD%E5%AE%9A%E9%9B%BB%E8%85%A6%E9%81%8B%E4%BD%9C%E9%9B%BB%E6%B5%81%E8%A8%AD%E5%AE%9A%E9%9B%BB%E8%85%A6%E7%9D%A1%E7%9C%A0%E9%9B%BB%E6%B5%81)  
+[4.設定新密碼](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E8%A8%AD%E5%AE%9A%E6%96%B0%E5%AF%86%E7%A2%BC)  
+[四、實際測試](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%9B%9B%E5%AF%A6%E9%9A%9B%E6%B8%AC%E8%A9%A6)  
+[1.開機(Setup)](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%96%8B%E6%A9%9Fsetup)  
+[2.斷電功能](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E6%96%B7%E9%9B%BB%E5%8A%9F%E8%83%BD)  
+[3.警鈴功能](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E8%AD%A6%E9%88%B4%E5%8A%9F%E8%83%BD)  
+[4.測試模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#4%E6%B8%AC%E8%A9%A6%E6%A8%A1%E5%BC%8F)  
+[5.正式模式](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#5%E6%AD%A3%E5%BC%8F%E6%A8%A1%E5%BC%8F)  
+[五、疑難排解](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E4%BA%94%E7%96%91%E9%9B%A3%E6%8E%92%E8%A7%A3)  
+[1.連不上Ethernet擴展板](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E9%80%A3%E4%B8%8D%E4%B8%8Aethernet%E6%93%B4%E5%B1%95%E6%9D%BF)  
+[]()  
+[3.如何安裝電腦電源到系統](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#3%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%9D%E9%9B%BB%E8%85%A6%E9%9B%BB%E6%BA%90%E5%88%B0%E7%B3%BB%E7%B5%B1)  
+[六、還須更改及測試之部分](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#%E5%85%AD%E9%82%84%E9%A0%88%E6%9B%B4%E6%94%B9%E5%8F%8A%E6%B8%AC%E8%A9%A6%E4%B9%8B%E9%83%A8%E5%88%86)  
+[1.網路訊息傳輸](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#1%E7%B6%B2%E8%B7%AF%E8%A8%8A%E6%81%AF%E5%82%B3%E8%BC%B8-)  
+[2.其他細節](https://github.com/WadeLin3/Arduino/tree/master/Computer%20Alert%20System#2%E5%85%B6%E4%BB%96%E7%B4%B0%E7%AF%80-)  
 
 -----
 ## 一、上傳程式碼到Arduino   
@@ -270,7 +270,7 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 
 ## 五、	疑難排解
 ### 1.	連不上Ethernet擴展板
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-1.png" width="200" > 
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-1.png" width="600" > 
 
 連不上網路擴張板(MAC地址無法使用)的原因可能為   
 1. 未接上網路線  
