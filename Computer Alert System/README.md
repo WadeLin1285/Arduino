@@ -10,28 +10,48 @@
 ## 一、上傳程式碼到Arduino   
 1.	首先，用USB傳輸線，連結Arduino開發板和電腦。  
 2.	從Tool(工具)裡，找到Board(開發板)選項。再從中找到「Arduino Uno」，並選取它。  
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-1.png" alt="Drawing" style="width: 10px;"/>  
-![drawing](drawing.jpg)
 
-![alt text](https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-1.png =100x)
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-1.png" width="600" >
   
 3.	從Tool(工具)裡，找到Port(連接阜/串口)選項。選取後面括弧有顯示Arduino Uno的Port。    
-> <center>【注意：串口前面的COM3中的數字3為電腦自動挑選的編號，每次連接或者每個開發板的數字都有可能不一樣。】</center>
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-2.png" width="600" >
+
+> 【注意】串口前面的COM3中的數字3為電腦自動挑選的編號，每次連接或者每個開發板的數字都有可能不一樣。
 ### 1.	上傳程式碼
 1.	首先，點擊左上角第一個有「打勾」之按鈕(Compile編譯)，此時，底下的狀態列會顯示「正在編譯」(Compiling sketch…)。  
-> <center>【注意：如果編譯有問題，底下的視窗欄會出現橘色的警告訊息，這時候就需要依照其所顯示的問題做修改。】</center>  
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-3.png" width="600" >
+
+> 【注意】如果編譯有問題，底下的視窗欄會出現橘色的警告訊息，這時候就需要依照其所顯示的問題做修改。  
 2.	等進度條(黃色框)跑完後，再點擊左上角第二個有「箭頭」之按鈕(Upload上傳)。  
-3.	此時，底下的狀態列也同樣會顯示「正在編譯」(Compiling sketch…)，但後面會接著顯示「上傳中」(Uploading…)  
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-5.png" width="600" >
+
+3.	此時，底下的狀態列也同樣會顯示「正在編譯」(Compiling sketch…)，但後面會接著顯示「上傳中」(Uploading…) 
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-4.png" width="600" >
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-7.png" width="600" >
+
 等上傳完成後，狀態列會顯示「上傳完成」(Done uploading…)，這樣就完成上傳程式的動作了。  
-> <center>【注意：在上傳時，可以注意Arduino板上的指示LED燈(TX和RX)，當上傳時，LED燈會快速閃爍。】</center>   
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-8.png" width="600" >
+
+> 【注意】在上傳時，可以注意Arduino板上的指示LED燈(TX和RX)，當上傳時，LED燈會快速閃爍。   
 ### 2.	開啟監視視窗
 從Tool(工具)裡，點擊Serial Monitor(序列埠輸出監控視窗)選項，就可以開啟訊息列。  
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-9.png" width="600" >
+
 在程式中有許多資料輸出，可以在連接電腦的情況下監控Arduino運作的情況。但如果出現下面的情況：  
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-10.png" width="600" >
 
 造成其錯誤的原因有  
 1.	USB未連接好  
 2.	未選取正確的Port(連接阜/串口)    
-> <center>【注意：若上述的動作都確認有做好，可以嘗試把USB拔掉再重插；若都不行，可換張Arduino板，因為可能是板子本身已經損壞。】</center>
+> 【注意】若上述的動作都確認有做好，可以嘗試把USB拔掉再重插；若都不行，可換張Arduino板，因為可能是板子本身已經損壞。
 
 ### 3.	顯示程式碼行數
 首先點擊工具列中的「檔案」(File)，找到「偏好設定」(Preferences)，點擊後，找到「顯示程式碼行數」(Display line numbers)，並勾選起來。
