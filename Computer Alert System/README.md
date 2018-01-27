@@ -5,8 +5,8 @@
 
 -----
 ## 一、上傳程式碼到Arduino   
-首先，用USB傳輸線，連結Arduino開發板和電腦。  
-從Tool(工具)裡，找到Board(開發板)選項。再從中找到「Arduino Uno」，並選取它。  
+首先，用USB傳輸線，連結Arduino開發板和電腦。  
+從Tool(工具)裡，找到Board(開發板)選項；再從中找到「Arduino Uno」，並選取它。  
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-1.png" width="600" >  
 
@@ -27,7 +27,7 @@
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-5.png" width="600" >  
 
-此時，底下的狀態列也同樣會顯示「正在編譯」(Compiling sketch…)，但後面會接著顯示「上傳中」(Uploading…) 
+此時，底下的狀態列也同樣會顯示「正在編譯」(Compiling sketch…)，但後面會接著顯示「上傳中」(Uploading…)。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-4.png" width="600" >  
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-7.png" width="600" >  
@@ -64,66 +64,57 @@
 
 ## 二、	可更改之項目
 ### 1.	預設密碼
-第九行在#define後面所定義的「CODE」值，為預設之系統密碼；可以隨意設定，但只僅能為羅馬數字0到9。
+第九行在`#define`後面所定義的`CODE`值，為預設之系統密碼；可以隨意設定，但只僅能為羅馬數字0到9。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-1.png" width="600" >
 
 ### 2.	密碼最大長度  
-第十行在#define後面所定義的「CODE_MAX」值，為系統密碼之最大長度，可以隨意設定，但不建議設定超過9，系統可能會無法計算太長的數字密碼。
+第十行在`#define`後面所定義的`CODE_MAX`值，為系統密碼之最大長度，可以隨意設定，但不建議設定超過9，系統可能會無法計算太長的數字密碼。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-2.png" width="600" >
 
 ### 3.	正式/測試模式  
-第11行的「TEST」為測試模式之開啟與否，若後面的數值為0則代表目前是「正式(正常)模式」；若為1則代表目前是「測試模式」。此兩者不同點在於觸動警鈴的方式和反應。
+第11行的`TEST`為測試模式之開啟與否，若後面的數值為`0`則代表目前是「正式(正常)模式」；若為`1`則代表目前是「測試模式」。此兩者不同點在於觸動警鈴的方式和反應。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-3.png" width="600" >
 
 ### 4.	警訊傳輸值  
-第12和13行為定義之傳送參數數值：可依照需求做改寫，但後面的數值必須為字串，故必須要用`""`框起來。
+第12和13行為定義之傳送參數數值：可依照需求作改寫，但後面的數值必須為字串，故必須要用`""`框起來。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-4.png" width="600" >
 
 ### 5.	判斷開關機之持續時間 
-當系統偵測到電腦處於睡眠狀態時，會開始計時連續持續時間，也就是左圖黃色部分的「SHUTDOWN_TIME」   
+當系統偵測到電腦處於睡眠狀態時，會開始計時連續持續時間，也就是下圖中的`SHUTDOWN_TIME`：  
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-5.png" width="600" >
 
-例如上圖中的時間參數(SHUTDOWN_TIME)為60，代表電腦處於睡眠狀態後60秒，系統就會自動將電腦斷電關機。當系統將電腦關機後，會再度開始計時，並在「RESTART_TIME」後重新接上電源(通路)；時間參數(RESTART_TIME)為10，代表電腦處於斷電狀態後10秒，系統就會自動將電腦重新上電，但這時候電腦還是處於關機的狀態。  
+例如上圖中的時間參數`SHUTDOWN_TIME`為`60`，代表電腦處於睡眠狀態後60秒，系統就會自動將電腦斷電關機。當系統將電腦關機後，會再度開始計時，並在`RESTART_TIME`後重新接上電源(通路)；時間參數`RESTART_TIME`為`10`，代表電腦處於斷電狀態後10秒，系統就會自動將電腦重新上電，但這時候電腦還是處於關機的狀態。  
 
 	【注意】這裡的時間數值單位都是「秒」。
 
 ### 6.	上鎖/警報延遲
-為了方便操作，在啟動上鎖功能和系統警報觸發時，會有時間延遲；延遲的時間(單位為秒)長度分別為「LOCK_DELAY」和「ALERT_DELAY」。
+為了方便操作，在啟動上鎖功能和系統警報觸發時，會有時間延遲；延遲的時間(單位為秒)長度分別為`LOCK_DELAY`和`ALERT_DELAY`。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-6.png" width="600" >
 
 	【注意】這裡的時間數值單位都是「秒」。
 
 ### 7.	MAC地址
-MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為固定值，後兩者可自由改寫。而通常只會改寫最後一個，例如：OxFD, OxFE ,OxFF…等。
+MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為固定值，後兩者可自由改寫。而通常只會改寫最後一個，例如：`OxFD`, `OxFE` ,`OxFF`…等。
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/2-7.png" width="600" >
 
-	【注意】在定義之變數(例如：CODE_N)和後面的數值(例如：9)中間不能有任何符號，只能有空白鍵。
+	【注意】在定義之變數(例如：`CODE_N`)和後面的數值(例如：`9`)中間不能有任何符號，只能有空白鍵。
 
-## 三、	還須更改及測試之部分
-### 1.	網路訊息傳輸  
-第17到19行的程式碼，原本是由於要使用Maker.ifttt.com進行的訊息傳輸之用，若要用其他方式進行訊息傳輸，必須更改此3行和其相關的方程式。  
-
-<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/3-1.png" width="600" >
-
-### 2.	其他細節  
-由於相關的測試還沒有齊全，(例如：警鈴長度、功能按鍵、設備指示燈、BUG…等)，需要有專門的人員負責測試並改良相關的程式碼。  
-
-## 四、	功能按鍵
+## 三、	功能按鍵
 | | 按鍵`A`|按鍵`B`|按鍵`C`|按鍵`D`|按鍵`#`|按鍵`*`|
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-|一般情況|系統上鎖|系統解鎖|設定電腦運作電流|設定電腦睡眠電流|設定新密碼|~無~|
-|解鎖程序|返回鍵|清除鍵|取消|~無~|~無~|~無~|
-|設定密碼程序|返回鍵|清除鍵|取消|~無~|~無~|輸入完成|
+|**一般情況**|系統上鎖|系統解鎖|設定電腦運作電流|設定電腦睡眠電流|設定新密碼|~無~|
+|**解鎖程序**|返回鍵|清除鍵|取消|~無~|~無~|~無~|
+|**設定密碼程序**|返回鍵|清除鍵|取消|~無~|~無~|輸入完成|
 
 ### 1.	上鎖
-最右側英文字母`A`鍵為「系統上鎖」之功能。依據前面所設定之「LOCK_DELAY」時間，系統會在按下上鎖鍵後「LOCK_DELAY」秒後開啟防盜功能。
+最右側英文字母`A`鍵為「系統上鎖」之功能。依據前面所設定之`LOCK_DELAY`時間，系統會在按下上鎖鍵後`LOCK_DELAY`秒後開啟防盜功能。
 
 ### 2.	解鎖
 最右側英文字母`B`鍵為「系統解鎖」之功能。  
@@ -169,7 +160,7 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 
 	【注意】若正確按下功能鍵或數字鍵時，系統會發出一聲短的提示聲(短嗶嗶聲)；而當按下不正確(沒有功能之按鍵)之按鍵時，系統會發出兩聲較長的提示聲(嗶嗶聲)。
 
-## 五、	實際測試
+## 四、	實際測試
 ### 1.	開機(Setup)
 開機時若有連接Arduino到電腦，並打開[序列埠輸出監控視窗](https://www.google.com)，接著就會看到左邊的監控視窗，裡面會顯示程式中所寫的訊息。第3行會顯示設定之密碼，然後進入設定網路擴充版程序。然而，如果沒有連接網路線或者網路線式無法連上網際網路時，會持續卡在這裡大約45秒至70秒，等設定時間超過後，系統會自動判斷無法連接網路，並繼續之後的程序(如下圖)：
 
@@ -245,7 +236,7 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 		
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/5-13.png" width="600" >
 
-## 六、	疑難排解
+## 五、	疑難排解
 ### 1.	連不上Ethernet擴展板
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-1.png" width="200" > 
 連不上網路擴張板(MAC地址無法使用)的原因可能為   
@@ -275,3 +266,11 @@ MAC地址為Ethernet擴展板本身的代號，總共有6組數字，前4組為�
 
 <img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/6-6.png" width="200" >
 
+## 六、	還須更改及測試之部分
+### 1.	網路訊息傳輸  
+第17到19行的程式碼，原本是由於要使用Maker.ifttt.com進行的訊息傳輸之用，若要用其他方式進行訊息傳輸，必須更改此3行和其相關的方程式。  
+
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/3-1.png" width="600" >
+
+### 2.	其他細節  
+由於相關的測試還沒有齊全，(例如：警鈴長度、功能按鍵、設備指示燈、BUG…等)，需要有專門的人員負責測試並改良相關的程式碼。  
