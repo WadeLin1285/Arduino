@@ -1,8 +1,8 @@
-# 電腦輔助及防盜系統
-## Computer Assistance and Anti-Theft System
+# 電腦輔助及防盜系統 
+### Computer Assistance and Anti-Theft System
 
-> -Update time : 2018/1/27   
-> -Author : Wade Lin
+#### Update time : 2018/1/27 
+#### Author : Wade Lin
 
 -----
 
@@ -10,7 +10,9 @@
 ## 一、上傳程式碼到Arduino   
 1.	首先，用USB傳輸線，連結Arduino開發板和電腦。  
 2.	從Tool(工具)裡，找到Board(開發板)選項。再從中找到「Arduino Uno」，並選取它。  
-  
+<img src="https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-1.png" alt="Drawing" style="width: 10px;"/>  
+![drawing](drawing.jpg)
+
 ![alt text](https://github.com/WadeLin3/Arduino/blob/master/Computer%20Alert%20System/img/1-1.png =100x)
   
 3.	從Tool(工具)裡，找到Port(連接阜/串口)選項。選取後面括弧有顯示Arduino Uno的Port。    
