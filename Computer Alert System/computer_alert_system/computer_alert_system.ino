@@ -15,6 +15,8 @@
 #define RESTART_TIME  10          // 系統重新啟動電源的時間 (Hint:若系統關閉電腦電源後，經過RESTART_TIME後，會重新開啟電腦電源) (Hint:單位-秒)
 #define LOCK_DELAY    10          // 系統上鎖延遲時間 (Hint:單位-秒)
 #define ALERT_DELAY   5           // 系統警報延遲時間 (Hint:單位-秒)
+int  LOWCURRENT  = 505;
+int  HIGHCURRENT = 520;
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xFD };                      // 網路擴張版之 MAC 地址 (Hint:若系統出現無法連上 MAC 或 DHCP 訊息時，可能為網路線未連接好，或沒有網際網路連線)
 IPAddress ip(192,168,2,105);                                              // 網路擴張版之 IP 地址 (Hint:此設定為備用之使用)
@@ -51,8 +53,6 @@ bool pc = true;                                                             // c
 bool problem = false;                                                       // problem  state : normal - 0 malfunction - 1
 bool alert = false;                                                         // alert   state : ON - 1 OFF - 0
 unsigned long int count = 0,count2 = 0,t = 0,old_t = 0; // time of system
-int  LOWCURRENT  = 490;
-int  HIGHCURRENT = 525;
 int  on_high = 0,on_low = 0;                                                 // the current data measured when computer is on 
 int  sleep_high = 0,sleep_low = 0;                                           // the current data measured when computer is sleeping
 int  setON_status = 0;                                                       // if the setON function is complete, set the status value to 1
@@ -202,7 +202,7 @@ void loop() {
     
     if (count > (SHUTDOWN_TIME*1000)) {
       Serial.println(F("Power Shutdown"));                                                 // computer power shut down 
-      digitalWrite(relayPin,LOW);                                                         // AC current open (斷路)
+      digitalWrite(relayPin,HIGH);                                                         // AC current open (斷路)
       pc = false;                                                                         // setting computer on-off state to "false(off)"
       count = 0;                                                                          // reset count number
       count2 = 0;
@@ -214,7 +214,7 @@ void loop() {
     // counting
     count2 = count2 + (t - old_t);
     if (current > HIGHCURRENT || current < LOWCURRENT) count = count + (t - old_t);       // determine whether the computer is in the sleep mode
-    if (count2 > (RESTART_TIME*1000)) digitalWrite(relayPin,HIGH);                        // AC current close (通路)
+    if (count2 > (RESTART_TIME*1000)) digitalWrite(relayPin,LOW);                        // AC current close (通路)
     if (count  > (SHUTDOWN_TIME*1000)){
       pc = true;                                                                          // setting computer on-off state to "true(on)"
       count = 0;                                                                          // reset count number
