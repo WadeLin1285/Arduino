@@ -202,7 +202,7 @@ void loop() {
     
     if (count > (SHUTDOWN_TIME*1000)) {
       Serial.println(F("Power Shutdown"));                                                 // computer power shut down 
-      digitalWrite(relayPin,HIGH);                                                         // AC current open (斷路)
+      //digitalWrite(relayPin,HIGH);                                                         // AC current open (斷路)
       pc = false;                                                                         // setting computer on-off state to "false(off)"
       count = 0;                                                                          // reset count number
       count2 = 0;
@@ -214,7 +214,7 @@ void loop() {
     // counting
     count2 = count2 + (t - old_t);
     if (current > HIGHCURRENT || current < LOWCURRENT) count = count + (t - old_t);       // determine whether the computer is in the sleep mode
-    if (count2 > (RESTART_TIME*1000)) digitalWrite(relayPin,LOW);                        // AC current close (通路)
+    //if (count2 > (RESTART_TIME*1000)) digitalWrite(relayPin,LOW);                        // AC current close (通路)
     if (count  > (SHUTDOWN_TIME*1000)){
       pc = true;                                                                          // setting computer on-off state to "true(on)"
       count = 0;                                                                          // reset count number
