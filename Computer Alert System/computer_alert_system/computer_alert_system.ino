@@ -15,8 +15,8 @@
 #define RESTART_TIME  10          // 系統重新啟動電源的時間 (Hint:若系統關閉電腦電源後，經過RESTART_TIME後，會重新開啟電腦電源) (Hint:單位-秒)
 #define LOCK_DELAY    10          // 系統上鎖延遲時間 (Hint:單位-秒)
 #define ALERT_DELAY   5           // 系統警報延遲時間 (Hint:單位-秒)
-int  LOWCURRENT  = 505;
-int  HIGHCURRENT = 520;
+int  LOWCURRENT  = 513;
+int  HIGHCURRENT = 515;
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xFD };                      // 網路擴張版之 MAC 地址 (Hint:若系統出現無法連上 MAC 或 DHCP 訊息時，可能為網路線未連接好，或沒有網際網路連線)
 IPAddress ip(192,168,2,105);                                              // 網路擴張版之 IP 地址 (Hint:此設定為備用之使用)
@@ -190,7 +190,7 @@ void loop() {
   // 電腦電流控制系統 (Hint:電腦將在睡眠後SUHTDOWN_TIME秒時，強制切斷電源，並在RESTART_TIME秒後重新連結電源)
   if (pc) {
     t = millis();                                                                        // aquire time data
-    if (old_t == 0) old_t = t;
+    if (count == 0 || old_t == 0) old_t = t;
     // counting
     if (current < HIGHCURRENT && current > LOWCURRENT) {
       count = count + (t - old_t);                                                       // determine whether the computer is in the sleep mode
@@ -210,6 +210,7 @@ void loop() {
   }
   else {
     t = millis();                                                                         // aquire time data
+    if (count == 0 || old_t == 0) old_t = t;
     Serial.print(F("Computer off... "));
     // counting
     count2 = count2 + (t - old_t);
