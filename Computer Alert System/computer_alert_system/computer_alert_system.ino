@@ -133,6 +133,7 @@ void setup() {
   digitalWrite(greenPin, HIGH  ); // green light on                        // 系統設定完成時，亮綠燈
   digitalWrite(redPin,   LOW   ); // red light off                         
   Serial.println(F("\nAll setup complete!\n"));
+  Alert(DATA1,DATA2,"All setup complete");
 }
 
 void loop() {
@@ -145,9 +146,11 @@ void loop() {
     alert = true;                                                          // start the alert system                                                         
     Buzzer(2,100);
     Serial.println(F("Alert System operated."));
+    Alert(DATA1,DATA2,"Alert System operated.");
   }
   if (key == 'B') {                                                        // 點擊B按鈕，進入解鎖模式 (Hint:若在解鎖時，觸發警鈴，將會回到鎖定模式)
-    Serial.println(F("Unlocking the alert system..."));               
+    Serial.println(F("Unlocking the alert system..."));    
+    Alert(DATA1,DATA2,"Unlocking the alert system...");           
     Buzzer(1,50);
     unlock();                                                              // close the alert system (require password)
   }
@@ -162,7 +165,8 @@ void loop() {
     setSLEEP();                                                            // set the current value when computer is sleeping
   }
   if (key == '*') {                                                        // 點擊*按鈕，進入設定密碼程序
-    Serial.println(F("Setting the code..."));
+    Serial.println(F("Setting new code..."));
+    Alert(DATA1,DATA2,"Setting new code...");
     Buzzer(1,50);
     setCODE();                                                             // set the new code
   }
@@ -190,7 +194,7 @@ void loop() {
   // 電腦電流控制系統 (Hint:電腦將在睡眠後SUHTDOWN_TIME秒時，強制切斷電源，並在RESTART_TIME秒後重新連結電源)
   if (pc) {
     t = millis();                                                                        // aquire time data
-    if (count == 0 || old_t == 0) old_t = t;
+    if (count == 0 && old_t == 0) old_t = t;
     // counting
     if (current < HIGHCURRENT && current > LOWCURRENT) {
       count = count + (t - old_t);                                                       // determine whether the computer is in the sleep mode
@@ -200,8 +204,9 @@ void loop() {
 
     old_t = t;                                                                           // update old time data
     
-    if (count > (SHUTDOWN_TIME*1000)) {
-      Serial.println(F("Power Shutdown"));                                                 // computer power shut down 
+    if (count/1000 > SHUTDOWN_TIME) {
+      Serial.println(F("Power Shutdown"));                                                 // computer power shut down
+      Alert(DATA1,DATA2,"Sleep Mode Confirmed...System Power Shutdown");
       //digitalWrite(relayPin,HIGH);                                                      // commen open (斷路)
       pc = false;                                                                         // setting computer on-off state to "false(off)"
       count = 0;                                                                          // reset count number
@@ -210,15 +215,16 @@ void loop() {
   }
   else {
     t = millis();                                                                         // aquire time data
-    if (count == 0 || old_t == 0) old_t = t;
+    if (count == 0 && old_t == 0) old_t = t;
     Serial.print(F("Computer off... "));
     // counting
     count2 = count2 + (t - old_t);
     if (current > HIGHCURRENT || current < LOWCURRENT) count = count + (t - old_t);       // determine whether the computer is in the sleep mode
-    //if (count2 > (RESTART_TIME*1000)) digitalWrite(relayPin,LOW);                       // commen close (通路)
-    if (count  > (SHUTDOWN_TIME*1000)){
+    //if (count2/1000 > RESTART_TIME) digitalWrite(relayPin,LOW);                       // commen close (通路)
+    if (count/1000  > SHUTDOWN_TIME){
       pc = true;                                                                          // setting computer on-off state to "true(on)"
       count = 0;                                                                          // reset count number
+      old_t = 0;
       count2 = 0;
     }
     old_t = t;                                                                            // update old time data
