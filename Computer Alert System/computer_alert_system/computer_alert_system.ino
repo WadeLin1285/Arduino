@@ -11,8 +11,9 @@
 #define TEST          0           // 測試模式 (Hint:若為0則為正式使用；1為測試使用)
 #define DATA1         "NCKU"      // 網路訊息通知之資料1
 #define DATA2         "001"       // 網路訊息通知之資料2
-#define SHUTDOWN_TIME 60          // 系統判斷睡眠的時間長度 (Hint:若系統在SHUTDOWN_TIME間，偵測到小於SAMPLE_NUM次數的電流變化數量，就會關閉電腦電源) (Hint:單位-秒)
-#define RESTART_TIME  10          // 系統重新啟動電源的時間 (Hint:若系統關閉電腦電源後，經過RESTART_TIME後，會重新開啟電腦電源) (Hint:單位-秒)
+#define SHUTDOWN_TIME 60          // 系統判斷睡眠的時間長度 (Hint:若系統在 SHUTDOWN_TIME 間，偵測到小於 SAMPLE_NUM 次數的電流變化數量，就會關閉電腦電源) (Hint:單位-秒)
+#define RESTART_TIME  10          // 系統重新啟動電源的時間 (Hint:若系統關閉電腦電源後，經過 RESTART_TIME 後，會重新開啟電腦電源) (Hint:單位-秒)
+#define SET_ON_MUTI   3           // 系統設定新開機時樣本數時，會記錄 SHUTDOWN_TIME * SET_ON_MUTI 時間內之樣本數，並予以平均
 #define LOCK_DELAY    10          // 系統上鎖延遲時間 (Hint:單位-秒)
 #define ALERT_DELAY   5           // 系統警報延遲時間 (Hint:單位-秒)
 #define CURRENT_PLOT  true        // 顯示電流感測之數值 (Hint:顯示-true；不顯示-false)
@@ -50,25 +51,25 @@ byte colPins[COLS] = { 6, 5, 3, 2};                                         //co
 Keypad Codepad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 // Define variables
-bool pc = true;                                                             // computer state : ON - true OFF - false
-bool alert = false;                                                         // alert   state : ON - 1 OFF - 0
 int  current;
 int  count_num;
-int  on_high = 0,on_low = 0;                                                 // the current data measured when computer is on 
-int  sleep_high = 0,sleep_low = 0;                                           // the current data measured when computer is sleeping
-int  setON_status = 0;                                                       // if the setON function is complete, set the status value to 1
-int  setSLEEP_status = 0;                                                    // if the setSLEEP function is complete, set the status value to 1
+int  on_sample = 0,sleep_sample = 0;                                                 // the current data measured when computer is on 
 int  code_length;
+bool pc = true;                                                             // computer state : ON - true OFF - false
+bool alert = false;                                                         // alert   state : ON - 1 OFF - 0
+bool setON_status = false;                                                       // if the setON function is complete, set the status value to 1
+bool setSLEEP_status = false;                                                    // if the setSLEEP function is complete, set the status value to 1
 char code[CODE_MAX];        
 long int  code_value = CODE;                                                 // 系統密碼 (預設密碼)
-unsigned long int count_t = 0,count2 = 0,t = 0,old_t = 0;                    // 時間與計時參數 (main函數)
-unsigned long int old_time = 0, new_time = 0, count3 = 0;                    // 時間與計時參數 (checkAlert函數)
+unsigned long int  count_t = 0, old_t = 0,  t = 0;                    // 時間與計時參數 (main函數)
+unsigned long int count_tt = 0, old_tt = 0, tt = 0;                    // 時間與計時參數 (checkAlert函數)
 
 // Define functions
 int  unlock();
 int  checkAlert();
 void setON();
 void setSLEEP();
+void checkSET();
 void setCODE();
 void Buzzer(int number, int delay_time = 1000);                              
 void Alert(char *school, char *number,char *event);
@@ -120,8 +121,7 @@ void setup() {
   delay(500);
   
   // 初始化參數
-  pc = true;        
-  problem = false;     
+  pc = true;           
   alert = false; 
 
   // 系統啟動完成訊息傳輸
@@ -133,105 +133,113 @@ void setup() {
 }
 
 void loop() {
-  checkAlert();                                                             // 偵測警報觸發器
   current = analogRead(currentPin);                                         // 偵測電腦電流
-  /*************************** 讀取輸入鍵盤資料 ****************************/
-  char key = Codepad.getKey();
-  if (key == 'A') {                                                         // 點擊A按鈕，進入鎖定模式
-    Serial.println(F("Alert System operating..."));
-    Buzzer(1,50);
-    delay(LOCK_DELAY*1000);
-    alert = true;                                                           // 啟動警報系統                                                         
-    Buzzer(2,100);
-    Serial.println(F("Alert System operated."));
-    Alert(DATA1,DATA2,"Alert System operated.");
+  /*************************** 監控視窗輸出數值 ****************************/
+  if (pc) Serial.print(F("[PC ON ]  "));
+  else    Serial.print(F("[PC OFF]  "));
+  // 顯示電流數值
+  if (CURRENT_PLOT) {
+    Serial.print(F("Current: "));
+    Serial.print(current);
+    Serial.print(F(" "));
   }
-  if (key == 'B') {                                                         // 點擊B按鈕，進入解鎖模式 (Hint:若在解鎖時，觸發警鈴，將會回到鎖定模式)
-    Serial.println(F("Unlocking the alert system..."));              
-    Buzzer(1,50);
-    Alert(DATA1,DATA2,"Unlocking the alert system..."); 
-    unlock();                                                               // 進入解鎖程序
-  }
-  if (key == 'C') {                                                         // 點擊C按鈕，進入設定電腦開機時之電流 (Hint:必須在電腦開機時使用)
-    Serial.println(F("Computer awake current status setting start..."));
-    Buzzer(1,50);
-    setON();                                                                // 設定開機時系統偵測之標準數值
-  }
-  if (key == 'D') {                                                         // 點擊D按鈕，進入設定電腦睡眠時之電流 (Hint:必須在電腦睡眠時使用)
-    Serial.println(F("Computer sleep current status setting start..."));
-    Buzzer(1,50);
-    setSLEEP();                                                             // 設定睡眠時系統偵測之標準數值
-  }
-  if (key == '*') {                                                         // 點擊*按鈕，進入設定密碼程序
-    Serial.println(F("Setting new code..."));
-    Alert(DATA1,DATA2,"Setting new code...");
-    Buzzer(1,50);
-    setCODE();                                                              // 設定新密碼
-  }
+  /***************************  偵測警報觸發器 ****************************/
+  checkAlert();
   /*************************** 電腦電流控制系統 ****************************/
-  if (pc) {
+  if (pc) {                                                          //電腦醒著之動作
     t = millis();                                                           // 設定時間
     if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
     count_t = count_t + (t - old_t);                                        // 計時
     old_t = t;                                                              
     if (count_t/1000 >= SHUTDOWN_TIME) {                                    // 開始判斷是否達到睡眠標準
-      if ()
+      if (count_num < SAMPLE_NUM) {                                       // 若計算點發生次數小於設定值，則關閉電腦電源
+        //digitalWrite(relayPin,HIGH);                                     // 繼電器斷路
+        Serial.print(F("PC Power Shutdown..."));                                // 電腦關閉訊息
+        Alert(DATA1,DATA2,"Sleep Mode Confirmed...System Power Shutdown");
+        pc = false;                                                     // 設定電腦狀態至false(關閉)
+      }
       count_t = 0;
+      old_t = 0;
     }
-    else (current < HIGHCURRENT && current > LOWCURRENT) count_num++;       // counting the number of determinational point
-    
-    
-    
-    if (count/1000 > SHUTDOWN_TIME) {
-      Serial.println(F("Power Shutdown"));                                                 // computer power shut down
-      Alert(DATA1,DATA2,"Sleep Mode Confirmed...System Power Shutdown");
-      //digitalWrite(relayPin,HIGH);                                                      // commen open (斷路)
-      pc = false;                                                                         // setting computer on-off state to "false(off)"
-      count = 0;                                                                          // reset count number
-      count2 = 0;
-    }
+    else 
+      if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;         // 計算計算點發生次數
   }
   else {
-    t = millis();                                                                         // aquire time data
-    if (count == 0 && old_t == 0) old_t = t;
-    Serial.print(F("Computer off... "));
-    // counting
-    count2 = count2 + (t - old_t);
-    if (current > HIGHCURRENT || current < LOWCURRENT) count = count + (t - old_t);       // determine whether the computer is in the sleep mode
-    //if (count2/1000 > RESTART_TIME) digitalWrite(relayPin,LOW);                       // commen close (通路)
-    if (count/1000  > SHUTDOWN_TIME){
-      pc = true;                                                                          // setting computer on-off state to "true(on)"
-      count = 0;                                                                          // reset count number
-      old_t = 0;
-      count2 = 0;
+    t = millis();                                                                         // 設定時間
+    if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
+    count_t = count_t + (t - old_t);                                        // 計時
+    old_t = t;
+    if (count_t >= RESTART_TIME) {
+      // digitalWrite(relayPin,LOW);                                       // 繼電器通路
+      Serial.print(F("Re-connect PC Power..."));                            // 電腦重新連接電源訊息 
+      Alert(DATA1,DATA2,"Re-connect PC Power");     
+      
+      if (count_t/1000 >= SHUTDOWN_TIME) {                                    // 開始判斷是否達到啟動標準
+        if (count_num > SAMPLE_NUM) {                                       // 若計算點發生次數大於設定值，確認電腦電源已開啟
+          Serial.println(F("PC Power On..."));                                // 電腦關閉訊息
+          Alert(DATA1,DATA2,"Operate Mode Confirmed...PC Power is On");
+          pc = true;                                                     // 設定電腦狀態至false(關閉)
+        }
+        count_t = 0;
+        old_t = 0;
+      }
+      else 
+        if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;         // 計算計算點發生次數
     }
-    old_t = t;                                                                            // update old time data
   }
-  // 顯示電流數值
-  if (CURRENT_PLOT) {
-    Serial.print(F("Current: "));
-    Serial.println(current);
+  /*************************** 讀取輸入鍵盤資料 ****************************/
+  char key = Codepad.getKey();
+  if (key == 'A') {                                                         // 點擊A按鈕，進入鎖定模式
+    Serial.print(F("Alert System operating..."));                             // 系統上鎖訊息
+    Buzzer(1,50);
+    delay(LOCK_DELAY*1000);                                                   // 延遲LOCK_TIME啟動
+    alert = true;                                                           // 啟動警報系統                                                         
+    Buzzer(2,100);
+    Serial.print(F("Alert System operated..."));                                // 系統上鎖訊息
+    Alert(DATA1,DATA2,"Alert System operated");
+  }
+  if (key == 'B') {                                                         // 點擊B按鈕，進入解鎖模式 (Hint:若在解鎖時，觸發警鈴，將會回到鎖定模式)
+    Serial.print(F("Unlocking the alert system..."));                          // 系統解鎖訊息
+    Buzzer(1,50);
+    Alert(DATA1,DATA2,"Unlocking the alert system");                            // 系統解鎖訊息
+    unlock();                                                               // 進入解鎖程序
+  }
+  if (key == 'C') {                                                         // 點擊C按鈕，進入設定電腦開機時之電流 (Hint:必須在電腦開機時使用)
+    Serial.print(F("Computer awake current status setting start..."));
+    Buzzer(1,50);
+    setON();                                                                // 設定開機時系統偵測之標準數值
+  }
+  if (key == 'D') {                                                         // 點擊D按鈕，進入設定電腦睡眠時之電流 (Hint:必須在電腦睡眠時使用)
+    Serial.print(F("Computer sleep current status setting start..."));
+    Buzzer(1,50);
+    setSLEEP();                                                             // 設定睡眠時系統偵測之標準數值
+  }
+  if (key == '*') {                                                         // 點擊*按鈕，進入設定密碼程序
+    Serial.print(F("Setting new code..."));
+    Alert(DATA1,DATA2,"Setting new code");
+    Buzzer(1,50);
+    setCODE();                                                              // 設定新密碼
   }
 }
 
 /*  Function Definition  */
 int checkAlert(){
   static bool alertON = false;
-  new_time = millis();
+  tt = millis();
   
   // Alert delay caclulate
   if (alertON) {
-    if (old_time == 0) old_time = new_time;
-    count3 = count3 + (new_time - old_time);
-    old_time = new_time;
-    if (count3 >= (ALERT_DELAY*1000)) {
+    if (old_tt == 0) old_tt = tt;
+    count_tt = count_tt + (tt - old_t);
+    old_t = tt;
+    if (count_tt >= (ALERT_DELAY*1000)) {
       if (TEST) Buzzer(1,500);
       else Buzzer(-1);
       alertON = false;
-      count3 = 0;
-      old_time = 0;
-      Alert(DATA1,DATA2,"Door Open");  // trigger ifttt event
-      Serial.println(F("Door Opened!"));
+      count_tt = 0;
+      old_tt = 0;
+      Serial.println(F("\nWARNING: Door Opened!\n"));
+      Alert(DATA1,DATA2,"WARNING: Door Open");  // trigger ifttt event
     }
   }
   
@@ -242,13 +250,15 @@ int checkAlert(){
   }
   if (TEST) {
     if (digitalRead(triggerPin_1) == LOW) {
-      Serial.println(F("Trigger 1 Triggered"));
+      Serial.print(F("Trigger 1 Triggered"));
+      Alert(DATA1,DATA2,"WARNING: Trigger 1 Triggered");  // trigger ifttt event
       digitalWrite(redPin,HIGH);    // red light on
       alertON = true;
       return 1;
     }
     else if (digitalRead(triggerPin_2) == LOW) {
-      Serial.println(F("Trigger 2 Triggered"));
+      Serial.print(F("Trigger 2 Triggered"));
+      Alert(DATA1,DATA2,"WARNING: Trigger 2 Triggered");  // trigger ifttt event
       digitalWrite(redPin,HIGH);    // red light on
       alertON = true;
       return 1;
@@ -260,13 +270,15 @@ int checkAlert(){
   }
   else {
     if (digitalRead(triggerPin_1) == HIGH) {
-      Serial.println(F("Trigger 1 Triggered"));
+      Serial.print(F("Trigger 1 Triggered"));
+      Alert(DATA1,DATA2,"WARNING: Trigger 1 Triggered");  // trigger ifttt event
       digitalWrite(redPin,HIGH);    // red light on
       alertON = true;
       return 1;
     }
     else if (digitalRead(triggerPin_2) == HIGH) {
-      Serial.println(F("Trigger 2 Triggered"));
+      Serial.print(F("Trigger 2 Triggered"));
+      Alert(DATA1,DATA2,"WARNING: Trigger 2 Triggered");  // trigger ifttt event
       digitalWrite(redPin,HIGH);    // red light on
       alertON = true;
       return 1;
@@ -286,30 +298,28 @@ int unlock() {
 
   if (alert == false) return 0;
   
-  // Read the code 
-  while(1) {
-    checkAlert();                                                          // still check the trigger
+  while(1) {                                                            // 讀取鍵盤輸入
+    checkAlert();                                                       // 依然偵測警報
     char key = Codepad.getKey();
     if (key) {
       Buzzer(1,50);
       Serial.print(F("Key inserted : "));
-      Serial.println(key);
+      Serial.print(key);
       if (key == 'A') {                               // back
-        Serial.println(F("Back"));
+        Serial.print(F(" [Back] "));
         Serial.print(F("Inserted Code : "));
         if (num > 0) {
           for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
-          Serial.println();
           input[num-1] = 0;
           num --;
         }
       }
       else if (key == 'B') {                          // clear all
         for (; num > 0 ; num--) input[num] = 0;
-        Serial.println(F("Clear all"));
+        Serial.print(F(" [Clear all] "));
       }
       else if (key == 'C') {                          // cancel
-        Serial.println(F("Unlock Cancel"));
+        Serial.print(F(" [Unlock Cancel] "));
         return 0;
       }
       else {
@@ -318,6 +328,7 @@ int unlock() {
         else num ++;
       }
     }
+    Serial.println();
   }
   for (int n = 0 ; n < code_length ; n++) {
     if (input[n] != code[n]) break;           
@@ -325,118 +336,91 @@ int unlock() {
   }
   if (!correct) {                              // incorrect code
     for (; num > 0 ; num--) input[num] = 0;
-    Serial.println(F("Incorrect password!"));
+    Serial.println(F("\nWARNING: Incorrect password!\n"));
+    Alert(DATA1,DATA2,"WARNING: Incorrect password!(Unlocking)");
     Buzzer(1,5000);                                                              // 密碼輸入錯誤時，會發出1次長嗶聲 (Hint: Buzzer(a,b) a為嗶嗶聲之次數，b為每次聲音之間隔時間(單位為毫秒ms=0.001s))
     return 0;
   }
   if (correct) {                               // code correct
-      Serial.println(F("Correct password!"));
+      Serial.println(F("\nCorrect password!...System Unlock\n"));
+      Alert(DATA1,DATA2,"Correct password...System Unlock)");
       alert = 0;                               // close the alert function
       Buzzer(0);                               // close the buzzer
       Buzzer(3,100);
   }
+  
 }
 
 // set the current when computer awake
 void setON() {
-  // measure high current
-  for (int n = 0; n < 100 ; n++) {
-    checkAlert();                                     // still check the trigger
-    current = analogRead(currentPin);
-    if (current > on_high) on_high = current;
-    delay(50);
-    // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);        // green light on
-    else digitalWrite(greenPin,LOW);                    // green light off
+  old_t = 0;
+  count_t = 0;
+  count_num = 0;
+  // 計算電腦開啟時之樣本數量
+  while(1) {
+    checkAlert();                                                         // 持續監控警報
+    t = millis();                                                           // 設定時間
+    if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
+    count_t = count_t + (t - old_t);                                        // 計時
+    old_t = t;                                                              
+    if (count_t/1000 >= SHUTDOWN_TIME*SET_ON_MUTI) break;                                    // 開始判斷是否達到睡眠標準
+    else 
+      if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;         // 計算計算點發生次數
+    // 顯示訊號
+    if (count_t%1000 > 500) digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
+    else digitalWrite(greenPin,LOW);                                      // 綠色指示燈關閉
   }
-  current = analogRead(currentPin);
-  on_low = current;
-  // measure low current
-  for (int n = 0; n < 100 ; n++) {
-    checkAlert();                                     // still check the trigger
-    current = analogRead(currentPin);
-    if (current < on_low) on_low = current;
-    delay(50);
-    // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);        // green light on
-    else digitalWrite(greenPin,LOW);                    // green light off
-  }
-  setON_status = 1; // status update
+  digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
+  on_sample = count_num/SET_ON_MUTI;
+  setON_status = true; // status update
   Buzzer(2,100);
-  Serial.println(F("Computer awake current status is updated!"));
-  
-  // determine whether both setting are done
-  if (setON_status == 1 && setSLEEP_status == 1) {
-    HIGHCURRENT = (on_high + sleep_high) / 2 ;
-    LOWCURRENT  = (on_low  + sleep_low) / 2 ;
-    
-    // update the variables
-    setON_status = 0;
-    setSLEEP_status = 0;
-    on_high = 0;
-    on_low = 0;
-    sleep_high = 0;
-    sleep_low = 0;
-    
-    // processing signal generation
-    Buzzer(1,300);
-    Buzzer(2,100);
-    Serial.print(F("Current Limit Value Change : "));
-    Serial.print(F("HIGH = "));
-    Serial.print(HIGHCURRENT);
-    Serial.print(F(" ; LOW = "));
-    Serial.println(LOWCURRENT);
-  }
+  Serial.print(F("Computer awake status is updated! New sample number of PC on is "));
+  Serial.println(on_sample);
+  checkSET();
 }
 
 // set the current when computer sleep
 void setSLEEP() {
-  // measure high current
-  for (int n = 0; n < 100 ; n++) {
-    checkAlert();                                     // still check the trigger
-    current = analogRead(currentPin);
-    if (current > sleep_high) sleep_high = current;
-    delay(50);
-    // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);        // green light on
-    else digitalWrite(greenPin,LOW);                    // green light off
+  old_t = 0;
+  count_t = 0;
+  count_num = 0;
+  // 計算電腦開啟時之樣本數量
+  while(1) {
+    checkAlert();                                                         // 持續監控警報
+    t = millis();                                                           // 設定時間
+    if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
+    count_t = count_t + (t - old_t);                                        // 計時
+    old_t = t;                                                              
+    if (count_t/1000 >= SHUTDOWN_TIME*SET_ON_MUTI) break;                                    // 開始判斷是否達到睡眠標準
+    else 
+      if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;         // 計算計算點發生次數
+    // 顯示訊號
+    if (count_t%1000 > 500) digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
+    else digitalWrite(greenPin,LOW);                                      // 綠色指示燈關閉
   }
-  current = analogRead(currentPin);
-  sleep_low = current;
-  // measure low current
-  for (int n = 0; n < 100 ; n++) {
-    checkAlert();                                     // still check the trigger
-    current = analogRead(currentPin);
-    if (current < sleep_low) sleep_low = current;
-    delay(50);
-    // processing signal generation
-    if (n % 10 == 1) digitalWrite(greenPin,HIGH);       // green light on
-    else digitalWrite(greenPin,LOW);                   // green light off
+  digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
+  sleep_sample = count_num/SET_ON_MUTI;
+  setSLEEP_status = true; // status update
+  Buzzer(2,100);
+  Serial.print(F("Computer sleep status is updated! New sample number of PC sleep is "));
+  Serial.println(sleep_sample);
+  checkSET();
+}
+
+void checkSET() {
+  if (setON_status && setSLEEP_status) {                                    // 判斷是否完成開機及睡眠之數據更新
+    SAMPLE_NUM = (on_sample + sleep_sample)/2;                              // 更新參數
+    setON_status = false;
+    setSLEEP_status = false;
+    Buzzer(1,300);                                                        // 傳遞訊息
+    Buzzer(2,100);
+    Serial.print(F("Sample Value Change : "));
+    Serial.print(SAMPLE_NUM);
+    Alert(DATA1,DATA2,"Setting new sample number value");
   }
-  setSLEEP_status = 1; // status update
-  Serial.println(F("Computer sleep current status is updated!"));
-  
-  // determine whether both setting are done
-  if (setON_status == 1 && setSLEEP_status == 1) {
-    HIGHCURRENT = (on_high + sleep_high) / 2 ;
-    LOWCURRENT  = (on_low  + sleep_low) / 2 ;
-    
-    // update the variables
-    setON_status = 0;
-    setSLEEP_status = 0;
-    on_high = 0;
-    on_low = 0;
-    sleep_high = 0;
-    sleep_low = 0;
-    
-    // processing signal generation
-    Buzzer(3,100);
-    Serial.print(F("Current Limit Value Change : "));
-    Serial.print(F("HIGH = "));
-    Serial.print(HIGHCURRENT);
-    Serial.print(F(" ; LOW = "));
-    Serial.println(LOWCURRENT);
-  }
+  old_t = 0;                                                              // 初始化參數
+  count_t = 0;
+  count_num = 0;
 }
 
 void setCODE() {
@@ -453,28 +437,27 @@ void setCODE() {
       if (key == '*' || key == '#' || key == 'D') {
         Buzzer(2,50);
         Serial.print(F("Key inserted error: "));
-        Serial.println(key);
+        Serial.print(key);
         continue;
       }
       Buzzer(1,50);
       Serial.print(F("Key inserted : "));
-      Serial.println(key);
+      Serial.print(key);
       if (key == 'A') {                               // back
-        Serial.println(F("Back"));
+        Serial.print(F(" [Back] "));
         Serial.print(F("Inserted Code : "));
         if (num > 0) {
           for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
-          Serial.println();
           input[num-1] = 0;
           num --;
         }
       }
       else if (key == 'B') {                          // clear all
         for (; num > 0 ; num--) input[num] = 0;
-        Serial.println(F("Clear all"));
+        Serial.print(F(" [Clear all] "));
       }
       else if (key == 'C') {                          // cancel
-        Serial.println(F("Set Code Cancel"));
+        Serial.print(F(" [Set Code Cancel] "));
         return 0;
       }
       else {
@@ -483,6 +466,7 @@ void setCODE() {
         num ++;
       }
     }
+    Serial.println();
   }
   for (int n = 0 ; n < code_length ; n++) {
     if (input[n] != code[n]) break;           
@@ -490,12 +474,13 @@ void setCODE() {
   }
   if (!correct) {                                      // incorrect code
     for (; num > 0 ; num--) input[num] = 0;
-    Serial.println(F("Incorrect password!"));
+    Serial.println(F("\nWARNING: Incorrect password!\n"));
+    Alert(DATA1,DATA2,"WARNING: Incorrect password!(Unlocking)");
     Buzzer(1,5000);                                                              // 密碼輸入錯誤時，會發出1次長嗶聲 (Hint: Buzzer(a,b) a為嗶嗶聲之次數，b為每次聲音之間隔時間(單位為毫秒ms=0.001s))
     return 0;
   }
   if (correct) {                                       // code correct
-      Serial.println(F("Correct password!"));
+      Serial.println(F("\nCorrect password!...Setting new code:\n"));
       Buzzer(3,100);
   }
   
@@ -504,7 +489,7 @@ void setCODE() {
   num = 0;
   while(1) {
     if (checkAlert()) break;                            // still check the trigger
-    if (num == CODE_MAX) {
+    if (num >= CODE_MAX) {
       Serial.println(F("Code Setting Finish(MAX Length)"));
       code_length = num;
       break;
@@ -514,32 +499,31 @@ void setCODE() {
       if (key == '*' || key == 'D') {
         Buzzer(2,50);
         Serial.print(F("Key inserted error: "));
-        Serial.println(key);
+        Serial.print(key);
         continue;
       }
       Buzzer(1,50);
       Serial.print(F("Key inserted : "));
-      Serial.println(key);
+      Serial.print(key);
       if (key == 'A') {                               // back
-        Serial.println(F("Back"));
+        Serial.print(F(" [Back] "));
         Serial.print(F("Inserted Code : "));
         if (num > 0) {
           for (int n = 0 ; n < num-1 ; n++)  Serial.print(input[n]);
-          Serial.println();
           input[num-1] = 0;
           num --;
         }
       }
       else if (key == 'B') {                          // clear all
         for (; num > 0 ; num--) input[num] = 0;
-        Serial.println(F("Clear all"));
+        Serial.print(F(" [Clear all] "));
       }
       else if (key == 'C') {                          // cancel
-        Serial.println(F("Set Code Cancel"));
+        Serial.print(F(" [Set Code Cancel]"));
         return 0;
       }
       else if (key == '#') {                          // cancel
-        Serial.println(F("Code Setting Finish"));
+        Serial.print(F(" [Code Setting Finish]"));
         code_length = num;
         break;
       }
@@ -549,19 +533,19 @@ void setCODE() {
         num ++;
       }
     }
+    Serial.println();
   }
   Serial.print(F("New code:"));
   for (int n = 0 ; n < code_length ; n++) {
     code[n] = input[n];
     Serial.print(code[n]);
   }
-  Serial.println();
+  Serial.print(F(" ; "));
   Serial.print(F("New code length:"));
   Serial.println(code_length);
   Buzzer(3,100);
 }
 
-// buzzer mode
 void Buzzer(int number, int delay_time = 1000){
   static int buzzer_state;
   if (number == -1) {
@@ -582,6 +566,7 @@ void Buzzer(int number, int delay_time = 1000){
         if (n < (number-1)) delay(delay_time);
     }
 }
+
 void GreenLED(){
   digitalWrite(greenPin,HIGH);      
   digitalWrite(redPin  ,LOW );         
