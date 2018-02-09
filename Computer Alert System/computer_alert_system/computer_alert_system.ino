@@ -17,9 +17,9 @@
 #define SET_ON_MUTI   3                                                          // 系統設定新開機時樣本數時，會記錄 SHUTDOWN_TIME * SET_ON_MUTI 時間內之樣本數，並予以平均
 #define LOCK_DELAY    10                                                         // 系統上鎖延遲時間 (Hint:單位-秒)
 #define ALERT_DELAY   5                                                          // 系統警報延遲時間 (Hint:單位-秒)
-#define LOWCURRENT   513                                                         // 系統取樣之電流最大值 
-#define HIGHCURRENT  515                                                         // 系統取樣之電流最小值 
-int  SAMPLE_NUM  =  20;                                                          // 系統取樣之判斷參數 (Hint:若系統偵測到樣本數小於SAMPLE_NUM時，會判斷電腦為睡眠中；相反時，則會判斷為啟動中)
+#define LOWCURRENT    500                                                        // 系統取樣之電流最大值 
+#define HIGHCURRENT   515                                                        // 系統取樣之電流最小值 
+int  SAMPLE_NUM = 5;                                                            // 系統取樣之判斷參數 (Hint:若系統偵測到樣本數小於SAMPLE_NUM時，會判斷電腦為睡眠中；相反時，則會判斷為啟動中)
 
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xFD };                             // 網路擴張版之 MAC 地址 (Hint:若系統出現無法連上 MAC 或 DHCP 訊息時，可能為網路線未連接好，或沒有網際網路連線)
 char MakerIFTTT_Key[]   = "bJa2fXsJqd4GvtJBF-2agaj5wjoTpLTUJnB0x7S-Zyq";         // 此3行程式碼須和前端程式互相配合設定
@@ -54,6 +54,7 @@ int  current;                                                                   
 int  count_num;                                                                    // 計算樣本數
 int  on_sample = 0,sleep_sample = 0;                                               // 計算電腦在開機和睡眠時的樣本數
 int  code_length;                                                                  // 密碼長度
+bool a = true;
 bool pc = true;                                                                    // 電腦狀態
 bool alert = false;                                                                // 警報器狀態
 bool setON_status = false;                                                         // 電腦啟動時參數設定狀態 
@@ -91,10 +92,10 @@ void setup() {
   digitalWrite(relayPin, LOW  );          // Commen close (通路)
   digitalWrite(greenPin, LOW   );         // green light off
   digitalWrite(redPin,   HIGH  );         // red light on
-  delay(500);
+  delay(100);
   
   // 設定輸入鍵盤
-  Serial.println(F("Setting code number..."));
+  Serial.print(F("Setting code number...  "));
   for (long int c = code_value ; c > 9 ; c /= 10) code_length ++;
   code_length ++;
   for (int n = code_length ; n > 0 ; n--) {
@@ -102,19 +103,18 @@ void setup() {
     if (n == 1) code_value = 0;
     else code_value /= 10;
   }
-  Serial.print(F("Code length:"));
-  Serial.println(code_length);
   Serial.print(F("Code : "));
   for (int n = 0 ; n < code_length ; n++)  Serial.print(code[n]);
-  Serial.println();
-  delay(500);
+  Serial.print(F("  Code length: "));
+  Serial.println(code_length);
+  delay(100);
 
   // 設定網路模組
-  Serial.println(F("Setting ethernet shield and connecting to server..."));
+  Serial.print(F("Setting ethernet shield with MAC...  "));
   if (Ethernet.begin(mac) == 0) Serial.println(F("Failed to configure Ethernet using DHCP"));
   else Serial.println(F("Connect to Etherent shield with MAC address"));
   delay(500);
-  Serial.println(F("Connecting to server..."));
+  Serial.print(F("Connecting to server...  "));
   if (client.connect(server,80)) Serial.println(F("connected"));
   else Serial.println(F("connection failed"));
   delay(500);
@@ -129,6 +129,8 @@ void setup() {
   GreenLED();
   Serial.println(F("\nAll setup complete!\n"));
   Alert(DATA1,DATA2,"All setup complete");
+  // 給系統1秒鐘時間作暖機
+  delay(1000);
 }
 
 void loop() {
@@ -142,7 +144,10 @@ void loop() {
   if (CURRENT_PLOT) {
     Serial.print(F("Current: "));
     Serial.print(current);
-    Serial.print(F(" "));
+    Serial.print(F(" Time: "));
+    Serial.print(count_t/1000);
+    Serial.print(F(" Count: "));
+    Serial.print(count_num);
   }
   /***************************  偵測警報觸發器 ****************************/
   checkAlert();
@@ -155,73 +160,88 @@ void loop() {
     old_t = t;                                                              
     if (count_t/1000 >= SHUTDOWN_TIME) {                                    // 開始判斷是否達到睡眠標準
       if (count_num < SAMPLE_NUM) {                                         // 若計算點發生次數小於設定值，則關閉電腦電源
-        //digitalWrite(relayPin,HIGH);                                      // 繼電器斷路
-        Serial.print(F("PC Power Shutdown..."));                             // 電腦關閉訊息
+        digitalWrite(relayPin,HIGH);                                        // 繼電器斷路
+        Serial.print(F("\nPC Power Shutdown..."));                           // 電腦關閉訊息
         Alert(DATA1,DATA2,"Sleep Mode Confirmed...System Power Shutdown");
         pc = false;                                                         // 設定電腦狀態至false(關閉)
       }
-      count_t = 0;
       old_t = 0;
+      count_t = 0;
+      count_num = 0;
     }
     else 
-      if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;       // 計算計算點發生次數
+      if (current > HIGHCURRENT || current < LOWCURRENT) count_num++;       // 計算計算點發生次數
   } //電腦睡眠時之動作
   else {
     t = millis();                                                           // 設定時間
     if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
     count_t = count_t + (t - old_t);                                        // 計時
     old_t = t;
-    if (count_t >= RESTART_TIME) {
-      // digitalWrite(relayPin,LOW);                                        // 繼電器通路
-      Serial.print(F("Re-connect PC Power..."));                             // 電腦重新連接電源訊息 
-      Alert(DATA1,DATA2,"Re-connect PC Power");     
-      if (count_t/1000 >= SHUTDOWN_TIME) {                                  // 開始判斷是否達到啟動標準
-        if (count_num > SAMPLE_NUM) {                                       // 若計算點發生次數大於設定值，確認電腦電源已開啟
-          Serial.println(F("PC Power On..."));                               // 電腦啟動訊息
-          Alert(DATA1,DATA2,"Operate Mode Confirmed...PC Power is On");
-          pc = true;                                                        // 設定電腦狀態至false(關閉)
-        }
-        count_t = 0;
+    if (count_t/1000 >= RESTART_TIME) {
+      digitalWrite(relayPin,LOW);                                        // 繼電器通路
+      if (a) {
+        Serial.print(F("\nRe-connect PC Power..."));                           // 電腦重新連接電源訊息 
+        Alert(DATA1,DATA2,"Re-connect PC Power");
+        a = false;
         old_t = 0;
+        count_t = 0;
+        count_num = 0;
       }
-      else 
-        if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;     // 計算計算點發生次數
     }
+    if (count_t/1000 >= SHUTDOWN_TIME) {                                  // 開始判斷是否達到啟動標準
+      if (count_num > SAMPLE_NUM) {                                       // 若計算點發生次數大於設定值，確認電腦電源已開啟
+        Serial.print(F("\nPC Power On..."));                               // 電腦啟動訊息
+        Alert(DATA1,DATA2,"Operate Mode Confirmed...PC Power is On");
+        pc = true;                                                        // 設定電腦狀態至false(關閉)
+        a = true;
+      }
+      old_t = 0;
+      count_t = 0;
+      count_num = 0;
+    }
+    else 
+      if (current > HIGHCURRENT || current < LOWCURRENT) count_num++;     // 計算計算點發生次數
   }
+  Serial.println();
   /*************************** 讀取輸入鍵盤資料 ****************************/
   char key = Codepad.getKey();
+  if  (key) {
+    old_t = 0;
+    count_t = 0;
+    count_num = 0;
+  }
   if (key == 'A') {                                                         // 點擊A按鈕，進入鎖定模式
-    Serial.print(F("Alert System operating..."));                            // 系統上鎖訊息
+    Serial.println(F("Alert System operating..."));                            // 系統上鎖訊息
     Buzzer(1,50);
     delay(LOCK_DELAY*1000);                                                 // 延遲LOCK_TIME啟動
     alert = true;                                                           // 啟動警報系統                                                         
     Buzzer(2,100);
-    Serial.print(F("Alert System operated..."));                             // 系統上鎖訊息
+    Serial.println(F("Alert System operated..."));                             // 系統上鎖訊息
     Alert(DATA1,DATA2,"Alert System operated");
   }
   if (key == 'B') {                                                         // 點擊B按鈕，進入解鎖模式 (Hint:若在解鎖時，觸發警鈴，將會回到鎖定模式)
-    Serial.print(F("Unlocking the alert system..."));                        // 系統解鎖訊息
+    Serial.println(F("Unlocking the alert system..."));                        // 系統解鎖訊息
     Buzzer(1,50);
     Alert(DATA1,DATA2,"Unlocking the alert system");                        // 系統解鎖訊息
     unlock();                                                               // 進入解鎖程序
   }
   if (key == 'C') {                                                         // 點擊C按鈕，進入設定電腦開機時之電流 (Hint:必須在電腦開機時使用)
-    Serial.print(F("Computer awake current status setting start..."));
-    Buzzer(1,50);
-    setON();                                                                // 設定開機時系統偵測之標準數值
+      Serial.println(F("Computer awake current status setting start..."));
+      Buzzer(1,50);
+      setON();                                                                // 設定開機時系統偵測之標準數值
   }
   if (key == 'D') {                                                         // 點擊D按鈕，進入設定電腦睡眠時之電流 (Hint:必須在電腦睡眠時使用)
-    Serial.print(F("Computer sleep current status setting start..."));
-    Buzzer(1,50);
-    setSLEEP();                                                             // 設定睡眠時系統偵測之標準數值
+      Serial.println(F("Computer sleep current status setting start..."));
+      Buzzer(1,50);
+      setSLEEP();                                                             // 設定睡眠時系統偵測之標準數值
   }
   if (key == '*') {                                                         // 點擊*按鈕，進入設定密碼程序
-    Serial.print(F("Setting new code..."));
+    Serial.println(F("Setting new code..."));
     Alert(DATA1,DATA2,"Setting new code");
     Buzzer(1,50);
     setCODE();                                                              // 設定新密碼
   }
-  Serial.println();
+  delay(200);
 }
 
 /*****************************  警報器監測  ********************************/
@@ -289,6 +309,7 @@ int checkAlert(){
       return 0;
     }
   }
+  Serial.println();
 }
 /****************************  解除系統鎖定  ****************************/
 int unlock() {
@@ -303,6 +324,7 @@ int unlock() {
     char key = Codepad.getKey();
     if (key) {
       Buzzer(1,50);
+      Serial.println();
       Serial.print(F("Key inserted : "));
       Serial.print(key);
       if (key == 'A') {                               // back
@@ -356,18 +378,29 @@ void setON() {
   count_t = 0;
   count_num = 0;
   // 計算電腦開啟時之樣本數量
-  while(1) {
-    checkAlert();                                                         // 持續監控警報
+  while(1) {  
+    checkAlert();                                                           // 持續監控警報
+    current = analogRead(currentPin);                                       // 偵測電腦電流
     t = millis();                                                           // 設定時間
     if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
     count_t = count_t + (t - old_t);                                        // 計時
     old_t = t;                                                              
     if (count_t/1000 >= SHUTDOWN_TIME*SET_ON_MUTI) break;                                    // 開始判斷是否達到睡眠標準
     else 
-      if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;         // 計算計算點發生次數
+      if (current > HIGHCURRENT || current < LOWCURRENT) count_num++;         // 計算計算點發生次數
     // 顯示訊號
     if (count_t%1000 > 500) digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
     else digitalWrite(greenPin,LOW);                                      // 綠色指示燈關閉
+    // 顯示電流數值
+    if (CURRENT_PLOT) {
+      Serial.print(F("[SetOn] Current: "));
+      Serial.print(current);
+      Serial.print(F(" Time: "));
+      Serial.print(count_t/1000);
+      Serial.print(F(" Count: "));
+      Serial.println(count_num);
+    }
+    delay(200);
   }
   digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
   on_sample = count_num/SET_ON_MUTI;
@@ -385,17 +418,28 @@ void setSLEEP() {
   count_num = 0;
   // 計算電腦開啟時之樣本數量
   while(1) {
-    checkAlert();                                                         // 持續監控警報
+    checkAlert();                                                           // 持續監控警報
+    current = analogRead(currentPin);                                       // 偵測電腦電流
     t = millis();                                                           // 設定時間
     if (count_t == 0 && old_t == 0) old_t = t;                              // 初始化(舊)時間參數
     count_t = count_t + (t - old_t);                                        // 計時
     old_t = t;                                                              
     if (count_t/1000 >= SHUTDOWN_TIME*SET_ON_MUTI) break;                                    // 開始判斷是否達到睡眠標準
     else 
-      if (current < HIGHCURRENT && current > LOWCURRENT) count_num++;         // 計算計算點發生次數
+      if (current > HIGHCURRENT || current < LOWCURRENT) count_num++;         // 計算計算點發生次數
     // 顯示訊號
     if (count_t%1000 > 500) digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
     else digitalWrite(greenPin,LOW);                                      // 綠色指示燈關閉
+    // 顯示電流數值
+    if (CURRENT_PLOT) {
+      Serial.print(F("[SetSleep] Current: "));
+      Serial.print(current);
+      Serial.print(F(" Time: "));
+      Serial.print(count_t/1000);
+      Serial.print(F(" Count: "));
+      Serial.println(count_num);
+    }
+    delay(200);
   }
   digitalWrite(greenPin,HIGH);                    // 綠色指示燈開啟
   sleep_sample = count_num/SET_ON_MUTI;
@@ -414,7 +458,7 @@ void checkSET() {
     Buzzer(1,300);                                                        // 傳遞訊息
     Buzzer(2,100);
     Serial.print(F("Sample Value Change : "));
-    Serial.print(SAMPLE_NUM);
+    Serial.println(SAMPLE_NUM);
     Alert(DATA1,DATA2,"Setting new sample number value");
   }
   old_t = 0;                                                              // 初始化參數
@@ -428,7 +472,7 @@ void setCODE() {
   bool correct = false;
   
   // check the code
-  Serial.print(F("Insert the old code : "));
+  Serial.println(F("Insert the old code : "));
   while(1) {
     checkAlert();                                     // still check the trigger
     char key = Codepad.getKey();
@@ -464,8 +508,8 @@ void setCODE() {
         if (num == (code_length-1)) break;
         num ++;
       }
+      Serial.println();
     }
-    Serial.println();
   }
   for (int n = 0 ; n < code_length ; n++) {
     if (input[n] != code[n]) break;           
@@ -531,8 +575,8 @@ void setCODE() {
         Serial.print(input[num]);
         num ++;
       }
+      Serial.println();
     }
-    Serial.println();
   }
   Serial.print(F("New code:"));
   for (int n = 0 ; n < code_length ; n++) {
@@ -578,7 +622,7 @@ void RedLED(){
 // send alert message
 void Alert(char *school, char *number,char *event) {
     // construct the POST request
-    Serial.println(F("Sending alert message"));
+    Serial.println(F("Sending Message"));
     char post_rqst[256];    // hand-calculated to be big enough
 
     char *p = post_rqst;
@@ -620,7 +664,7 @@ void Alert(char *school, char *number,char *event) {
 
     // finally we are ready to send the POST to the server!
     client.print(post_rqst);
-    Serial.println(F("Message sending sucess!"));
+    Serial.println(F("Message sending success!"));
 }
 char *append_str(char *here, char *s) {
     while (*here++ = *s++)
