@@ -25,6 +25,7 @@
  We have disabled the internal pull-ups used by the Wire library in the Wire.h/twi.c utility file.
  We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L /twi.h utility file.
  */
+ 
 #include <SPI.h>
 #include <Wire.h>   
 //#include <Adafruit_GFX.h>
